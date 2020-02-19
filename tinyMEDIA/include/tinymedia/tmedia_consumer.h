@@ -99,6 +99,7 @@ typedef struct tmedia_consumer_s {
     struct {
         enum tmedia_codec_id_e codec_id;
         // other options to be added
+        tsk_bool_t  passthrough;
     } decoder;
 
     const struct tmedia_consumer_plugin_def_s* plugin;

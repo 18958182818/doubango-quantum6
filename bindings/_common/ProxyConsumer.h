@@ -90,6 +90,12 @@ public:
     void setCallback(ProxyAudioConsumerCallback* pCallback) {
         m_pCallback = pCallback;
     }
+
+    void setParams(const bool bPassthrough)
+    {
+        TMEDIA_CONSUMER(m_pWrappedPlugin)->decoder.passthrough = bPassthrough;
+    }
+
 #if !defined(SWIG)
     inline ProxyAudioConsumerCallback* getCallback()const {
         return m_pCallback;
@@ -168,6 +174,23 @@ public:
     void setCallback(ProxyVideoConsumerCallback* pCallback) {
         m_pCallback = pCallback;
     }
+
+    void setParams(const bool bPassthrough, const unsigned nWidth, const unsigned nHeight, const unsigned nRotate)
+    {
+        TMEDIA_CONSUMER(m_pWrappedPlugin)->decoder.passthrough = bPassthrough;
+        if (nWidth <= 0 || nHeight <= 0)
+        {
+            return;
+        }
+
+        // Is this useful? I'm not sure.
+        TMEDIA_CONSUMER(m_pWrappedPlugin)->video.in.width       = nWidth;
+        TMEDIA_CONSUMER(m_pWrappedPlugin)->video.in.height      = nHeight;
+
+        TMEDIA_CONSUMER(m_pWrappedPlugin)->video.display.width  = nWidth;
+        TMEDIA_CONSUMER(m_pWrappedPlugin)->video.display.height = nHeight;
+    }
+
     bool setAutoResizeDisplay(bool bAutoResizeDisplay);
     bool getAutoResizeDisplay()const;
     bool setConsumeBuffer(const void* pConsumeBufferPtr, unsigned nConsumeBufferSize);

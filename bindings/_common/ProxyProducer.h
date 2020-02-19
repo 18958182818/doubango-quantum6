@@ -80,6 +80,12 @@ public:
     void setCallback(ProxyAudioProducerCallback* pCallback) {
         m_pCallback = pCallback;
     }
+
+    void setParams(const bool bPassthrough)
+    {
+        TMEDIA_PRODUCER(m_pWrappedPlugin)->encoder.passthrough = bPassthrough;
+    }
+
 #if !defined(SWIG)
     inline bool usePushCallback() {
         return m_bUsePushCallback;
@@ -157,6 +163,13 @@ public:
     void setCallback(ProxyVideoProducerCallback* pCallback) {
         m_pCallback = pCallback;
     }
+
+    void setParams(const bool bPassthrough, const unsigned nWidth, const unsigned nHeight)
+    {
+        TMEDIA_PRODUCER(m_pWrappedPlugin)->encoder.passthrough = bPassthrough;
+        setActualCameraOutputSize(nWidth, nHeight);
+    }
+
 #if !defined(SWIG)
     int sendRaw(const void* pBuffer, unsigned nSize, unsigned nDuration, bool bMarker);
     int sendRaw(const void* pBuffer, unsigned nSize, const void* proto_hdr);

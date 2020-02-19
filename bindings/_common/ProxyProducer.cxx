@@ -34,6 +34,7 @@
 #include "tsk_debug.h"
 
 #include "tinydav/audio/tdav_producer_audio.h"
+#include "tinydav/video/tdav_session_video.h"
 
 
 /* ============ Audio Media Producer Interface ================= */
@@ -556,9 +557,20 @@ bool ProxyVideoProducer::setMirror(bool bMirror)
 // this function is only needed if the actual size (output from your camera) is different than the negociated one
 bool ProxyVideoProducer::setActualCameraOutputSize(unsigned nWidth, unsigned nHeight)
 {
-    if(m_pWrappedPlugin) {
-        TMEDIA_PRODUCER(m_pWrappedPlugin)->video.width = nWidth;
+    if(m_pWrappedPlugin && nWidth > 0 && nHeight > 0) {
+        TMEDIA_PRODUCER(m_pWrappedPlugin)->video.width  = nWidth;
         TMEDIA_PRODUCER(m_pWrappedPlugin)->video.height = nHeight;
+
+        //Must set width/height at here. Other places would not active.
+        if (TMEDIA_PRODUCER(m_pWrappedPlugin)->enc_cb.callback_data)
+        {
+            tdav_session_video_t* video   = (tdav_session_video_t*)TMEDIA_PRODUCER(m_pWrappedPlugin)->enc_cb.callback_data;
+            tmedia_codec_t* codec_encoder = (tmedia_codec_t*)tsk_object_ref(video->encoder.codec);
+            TMEDIA_CODEC_VIDEO(codec_encoder)->out.width    = nWidth;
+            TMEDIA_CODEC_VIDEO(codec_encoder)->out.height   = nHeight;
+            TSK_OBJECT_SAFE_FREE(codec_encoder);
+        }
+
         return true;
     }
     return false;

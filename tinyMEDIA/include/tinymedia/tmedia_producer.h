@@ -88,6 +88,7 @@ typedef struct tmedia_producer_s {
     struct {
         enum tmedia_codec_id_e codec_id;
         // other options to be added
+        tsk_bool_t  passthrough;
     } encoder;
 
     struct {
