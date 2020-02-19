@@ -106,24 +106,15 @@ tsk_size_t trtp_rtp_header_serialize_to(const trtp_rtp_header_t *self, void *buf
     pbuff[3] = self->seq_num & 0xFF;
     // Octet-4-5-6-7: timestamp (32)
     // ((uint32_t*)&pbuff[4]) = tnet_htonl(self->timestamp);
-    pbuff[4] = self->timestamp >> 24;
-    pbuff[5] = (self->timestamp >> 16) & 0xFF;
-    pbuff[6] = (self->timestamp >> 8) & 0xFF;
-    pbuff[7] = self->timestamp & 0xFF;
+    UINT32_TO_BYTES(self->timestamp, &(pbuff[4]));
     // Octet-8-9-10-11: SSRC (32)
     //((uint32_t*)&pbuff[8]) = tnet_htonl(self->ssrc);
-    pbuff[8] = self->ssrc >> 24;
-    pbuff[9] = (self->ssrc >> 16) & 0xFF;
-    pbuff[10] = (self->ssrc >> 8) & 0xFF;
-    pbuff[11] = self->ssrc & 0xFF;
+    UINT32_TO_BYTES(self->ssrc, &(pbuff[8]));
 
     // Octet-12-13-14-15-****: CSRC
     for(i = 0, j = 12; i<self->csrc_count; ++i, ++j) {
         // *((uint32_t*)&pbuff[12+i]) = tnet_htonl(self->csrc[i]);
-        pbuff[j] = self->csrc[i] >> 24;
-        pbuff[j + 1] = (self->csrc[i] >> 16) & 0xFF;
-        pbuff[j + 2] = (self->csrc[i] >> 8) & 0xFF;
-        pbuff[j + 3] = self->csrc[i] & 0xFF;
+        UINT32_TO_BYTES(self->csrc[i], &(pbuff[j]));
     }
 
     return ret;
@@ -207,18 +198,18 @@ trtp_rtp_header_t* trtp_rtp_header_deserialize(const void *data, tsk_size_t size
     pdata += 2;
 
     /* timestamp (32bits) */
-    header->timestamp = pdata[0] << 24 | pdata[1] << 16 | pdata[2] << 8 | pdata[3];
+    header->timestamp = BYTES_TO_UINT32(pdata);
     // skip octets
     pdata += 4;
 
     /* synchronization source (SSRC) identifier (32bits) */
-    header->ssrc = pdata[0] << 24 | pdata[1] << 16 | pdata[2] << 8 | pdata[3];
+    header->ssrc = BYTES_TO_UINT32(pdata);
     // skip octets
     pdata += 4;
 
     /* contributing source (CSRC) identifiers */
     for(i=0; i<csrc_count; i++, pdata += 4) {
-        header->csrc[i] = pdata[0] << 24 | pdata[1] << 16 | pdata[2] << 8 | pdata[3];
+        header->csrc[i] = BYTES_TO_UINT32(pdata);
     }
 
     return header;

@@ -28,6 +28,8 @@
 
 TMEDIA_BEGIN_DECLS
 
+#define DEFAULT_VIDEO_FPS 15
+
 
 TINYMEDIA_API int tmedia_defaults_set_profile(tmedia_profile_t profile);
 TINYMEDIA_API tmedia_profile_t tmedia_defaults_get_profile();

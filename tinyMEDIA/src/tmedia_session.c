@@ -174,19 +174,19 @@ int tmedia_session_init(tmedia_session_t* self, tmedia_type_t type)
             self->dtls.verify = verify;
         }
         /* QoS metrics */
-        self->qos_metrics.q1 = 0.f;
-        self->qos_metrics.q2 = 0.f;
-        self->qos_metrics.q3 = 0.f;
-        self->qos_metrics.q4 = 0.f;
+        self->qos_metrics.q1   = 0.f;
+        self->qos_metrics.q2   = 0.f;
+        self->qos_metrics.q3   = 0.f;
+        self->qos_metrics.q4   = 0.f;
         self->qos_metrics.qvag = 1.f;
-        self->qos_metrics.last_update_time = 0;
-        self->qos_metrics.bw_up_est_kbps = 0;
-        self->qos_metrics.bw_down_est_kbps = 0;
-        self->qos_metrics.video_out_width = 0;
-        self->qos_metrics.video_out_height = 0;
-        self->qos_metrics.video_in_width = 0;
-        self->qos_metrics.video_in_height = 0;
-        self->qos_metrics.video_in_avg_fps = 0;
+        self->qos_metrics.last_update_time   = 0;
+        self->qos_metrics.bw_up_est_kbps     = 0;
+        self->qos_metrics.bw_down_est_kbps   = 0;
+        self->qos_metrics.video_out_width    = 0;
+        self->qos_metrics.video_out_height   = 0;
+        self->qos_metrics.video_in_width     = 0;
+        self->qos_metrics.video_in_height    = 0;
+        self->qos_metrics.video_in_avg_fps   = 0;
         self->qos_metrics.video_dec_avg_time = 0;
         self->qos_metrics.video_enc_avg_time = 0;
 

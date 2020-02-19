@@ -54,19 +54,24 @@ static const fmtp_size_t fmtp_sizes[] = {
     /* must be sorted like this */
     {"2160P", tmedia_pref_video_size_2160p, tsk_false, 3840, 2160},
     {"1080P", tmedia_pref_video_size_1080p, tsk_false, 1920, 1080},
-    {"16CIF", tmedia_pref_video_size_16cif, tsk_true, 1408, 1152},
-    {"720P", tmedia_pref_video_size_720p, tsk_false, 1280, 720},
-    {"XGA", tmedia_pref_video_size_xga, tsk_false, 1024, 768},
-    {"480P", tmedia_pref_video_size_480p, tsk_false, 852, 480},
-    {"WVGA", tmedia_pref_video_size_wvga, tsk_false, 800, 480},
-    {"SVGA", tmedia_pref_video_size_svga, tsk_false, 800, 600},
-    {"4CIF", tmedia_pref_video_size_4cif, tsk_true, 704, 576},
-    {"VGA", tmedia_pref_video_size_vga, tsk_false, 640, 480},
-    {"HVGA", tmedia_pref_video_size_hvga, tsk_false, 480, 320},
-    {"CIF", tmedia_pref_video_size_cif, tsk_true, 352, 288},
-    {"QVGA", tmedia_pref_video_size_qvga, tsk_false, 320, 240},
-    {"QCIF", tmedia_pref_video_size_qcif, tsk_true, 176, 144},
-    {"SQCIF", tmedia_pref_video_size_sqcif, tsk_true, 128, 96}
+
+    {"16CIF", tmedia_pref_video_size_16cif, tsk_true,  1408, 1152},
+    {"720P",  tmedia_pref_video_size_720p,  tsk_false, 1280,  720},
+    {"XGA",   tmedia_pref_video_size_xga,   tsk_false, 1024,  768},
+    {"540P",  tmedia_pref_video_size_540p,  tsk_false, 960,   540}, // iOS 960*540
+    {"480P",  tmedia_pref_video_size_480p,  tsk_false, 852,   480},
+
+    {"WVGA",  tmedia_pref_video_size_wvga,  tsk_false, 800,   480},
+    {"SVGA",  tmedia_pref_video_size_svga,  tsk_false, 800,   600},
+    {"4CIF",  tmedia_pref_video_size_4cif,  tsk_true,  704,   576},
+    {"VGA",   tmedia_pref_video_size_vga,   tsk_false, 640,   480},
+	{"360P",  tmedia_pref_video_size_360p,  tsk_false, 640,   360}, // 640 x 360
+
+    {"HVGA",  tmedia_pref_video_size_hvga,  tsk_false, 480,   320},
+    {"CIF",   tmedia_pref_video_size_cif,   tsk_true,  352,   288},
+    {"QVGA",  tmedia_pref_video_size_qvga,  tsk_false, 320,   240},
+    {"QCIF",  tmedia_pref_video_size_qcif,  tsk_true,  176,   144},
+    {"SQCIF", tmedia_pref_video_size_sqcif, tsk_true,  128,    96}
 };
 
 typedef int (*plugin_register)(const void* plugin_def);
@@ -303,7 +308,7 @@ int tmedia_parse_video_fmtp(const char* fmtp, tmedia_pref_video_size_t pref_vs, 
     // set default values
     best_vs = fmtp_sizes[(sizeof(fmtp_sizes)/sizeof(fmtp_sizes[0])) - 1].pref_vs /* last = lowest resolution */;
     ret = tmedia_video_get_size(pref_vs, width, height);
-    *fps = 15;
+    *fps = DEFAULT_VIDEO_FPS;
 
     if((params = tsk_params_fromstring(fmtp, ";", tsk_true))) {
         // set real values
@@ -316,7 +321,7 @@ int tmedia_parse_video_fmtp(const char* fmtp, tmedia_pref_video_size_t pref_vs, 
                     *width= fmtp_sizes[i].width;
                     *height = fmtp_sizes[i].height;
                     *fps = atoi(param->value);
-                    *fps = *fps ? 30/(*fps) : 15;
+                    *fps = *fps ? 30/(*fps) : DEFAULT_VIDEO_FPS;
                     ret = 0;
                     best_vs = fmtp_sizes[i].pref_vs;
                     // rfc 4629 section 8.2.1: Parameters offered first are the most preferred picture mode to be received.

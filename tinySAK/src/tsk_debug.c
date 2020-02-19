@@ -30,8 +30,8 @@
 #else
 
 static const void* tsk_debug_arg_data = tsk_null;
-static tsk_debug_f tsk_debug_info_cb = tsk_null;
-static tsk_debug_f tsk_debug_warn_cb = tsk_null;
+static tsk_debug_f tsk_debug_info_cb  = tsk_null;
+static tsk_debug_f tsk_debug_warn_cb  = tsk_null;
 static tsk_debug_f tsk_debug_error_cb = tsk_null;
 static tsk_debug_f tsk_debug_fatal_cb = tsk_null;
 static int tsk_debug_level = DEBUG_LEVEL;

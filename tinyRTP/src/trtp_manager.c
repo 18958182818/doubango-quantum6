@@ -1876,8 +1876,8 @@ static tsk_object_t* trtp_manager_ctor(tsk_object_t * self, va_list * app)
 #endif /* HAVE_SRTP */
 
         /* rtp */
-        manager->rtp.timestamp = rand()^rand();
-        manager->rtp.seq_num = rand()^rand();
+        manager->rtp.timestamp  = rand()^rand();
+        manager->rtp.seq_num    = rand()^rand();
         manager->rtp.ssrc.local = rand()^rand()^(int)tsk_time_epoch();
         manager->rtp.dscp = TRTP_DSCP_RTP_DEFAULT;
 

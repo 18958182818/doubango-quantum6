@@ -169,15 +169,15 @@ QoS* MediaSessionMgr::sessionGetQoS(twrap_media_type_t media)
             session->qos_metrics.q4,
             session->qos_metrics.q5);
         if (pQoS && ((_media & tmedia_video) || (_media & tmedia_bfcp_video))) {
-            pQoS->m_VideoInWidth = session->qos_metrics.video_in_width;
-            pQoS->m_VideoInHeight = session->qos_metrics.video_in_height;
-            pQoS->m_VideoOutWidth = session->qos_metrics.video_out_width;
-            pQoS->m_VideoOutHeight = session->qos_metrics.video_out_height;
-            pQoS->m_BandwidthDownKbps = session->qos_metrics.bw_down_est_kbps;
-            pQoS->m_BandwidthUpKbps = session->qos_metrics.bw_up_est_kbps;
-            pQoS->m_VideoInAvgFps = session->qos_metrics.video_in_avg_fps;
-            pQoS->m_VideoDecAvgTime = session->qos_metrics.video_dec_avg_time;
-            pQoS->m_VideoEncAvgTime = session->qos_metrics.video_enc_avg_time;
+            pQoS->m_VideoInWidth        = session->qos_metrics.video_in_width;
+            pQoS->m_VideoInHeight       = session->qos_metrics.video_in_height;
+            pQoS->m_VideoOutWidth       = session->qos_metrics.video_out_width;
+            pQoS->m_VideoOutHeight      = session->qos_metrics.video_out_height;
+            pQoS->m_BandwidthDownKbps   = session->qos_metrics.bw_down_est_kbps;
+            pQoS->m_BandwidthUpKbps     = session->qos_metrics.bw_up_est_kbps;
+            pQoS->m_VideoInAvgFps       = session->qos_metrics.video_in_avg_fps;
+            pQoS->m_VideoDecAvgTime     = session->qos_metrics.video_dec_avg_time;
+            pQoS->m_VideoEncAvgTime     = session->qos_metrics.video_enc_avg_time;
         }
         TSK_OBJECT_SAFE_FREE(session);
         return pQoS;

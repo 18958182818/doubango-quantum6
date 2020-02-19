@@ -31,7 +31,7 @@
 static tmedia_profile_t __profile = tmedia_profile_default;
 static tmedia_bandwidth_level_t __bl = tmedia_bl_unrestricted;
 static tsk_bool_t __congestion_ctrl_enabled = tsk_true;
-static int32_t __video_fps = 15; // allowed values: ]0 - 120]
+static int32_t __video_fps = DEFAULT_VIDEO_FPS; // allowed values: ]0 - 120]
 static int32_t __video_motion_rank = 2; // allowed values: 1(low), 2(medium) or 4(high)
 static int32_t __bw_video_up_max_kbps = INT_MAX; // <= 0: unrestricted, Unit: kbps
 static int32_t __bw_video_down_max_kbps = INT_MAX; // <= 0: unrestricted, Unit: kbps
@@ -61,7 +61,7 @@ static int32_t __audio_ptime = 20;
 static uint16_t __rtp_port_range_start = 1024;
 static uint16_t __rtp_port_range_stop = 65535;
 static tsk_bool_t __rtp_symetric_enabled = tsk_false; // This option is force symetric RTP for remote size. Local: always ON
-static tmedia_type_t __media_type = tmedia_audio;
+static tmedia_type_t __media_type = tmedia_video;
 static int32_t __volume = 100;
 static char* __producer_friendly_name[3] = { tsk_null/*audio*/, tsk_null/*video*/, tsk_null/*bfcpvideo*/ }; // pref. camera(index=1) and sound card(index=0) friendly names (e.g. Logitech HD Pro Webcam C920).
 static int32_t __inv_session_expires = 0; // Session Timers: 0: disabled

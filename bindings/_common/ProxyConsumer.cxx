@@ -430,7 +430,7 @@ int twrap_consumer_proxy_video_prepare(tmedia_consumer_t* self, const tmedia_cod
             self->video.fps = TMEDIA_CODEC_VIDEO(codec)->in.fps;
             // in
             self->video.in.chroma = tmedia_chroma_yuv420p;
-            self->video.in.width = TMEDIA_CODEC_VIDEO(codec)->in.width;
+            self->video.in.width  = TMEDIA_CODEC_VIDEO(codec)->in.width;
             self->video.in.height = TMEDIA_CODEC_VIDEO(codec)->in.height;
             // display (out)
             self->video.display.chroma = video->pcConsumer->getChroma();

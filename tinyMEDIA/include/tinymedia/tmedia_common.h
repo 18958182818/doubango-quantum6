@@ -43,18 +43,18 @@ struct tsdp_header_M_s;
 /** List of all supported media types */
 // @tinyWRAP
 typedef enum tmedia_type_e {
-    tmedia_none = 0x00,
-    tmedia_ghost = (0x01 << 0),
+    tmedia_none			=  0x00,
+    tmedia_ghost		= (0x01 << 0),
 
-    tmedia_audio = (0x01 << 1),
-    tmedia_video = (0x01 << 2),
-    tmedia_chat = (0x01 << 3),
-    tmedia_file = (0x01 << 4),
-    tmedia_t38 = (0x01 << 5),
-    tmedia_t140 = (0x01 << 6),
-    tmedia_bfcp = (0x01 << 7),
-    tmedia_bfcp_audio = (0x01 << 8)/*must*/ | tmedia_bfcp, /* do not add "| audio". Otherwise it will be impossible to start an "video+bfcp-audio" session. */
-    tmedia_bfcp_video = (0x01 << 9)/*must*/ | tmedia_bfcp, /* do not add "| video". Otherwise it will be impossible to start an "audio+bfcp-video" session. */
+    tmedia_audio		= (0x01 << 1),
+    tmedia_video		= (0x01 << 2),
+    tmedia_chat			= (0x01 << 3),
+    tmedia_file			= (0x01 << 4),
+    tmedia_t38			= (0x01 << 5),
+    tmedia_t140			= (0x01 << 6),
+    tmedia_bfcp			= (0x01 << 7),
+    tmedia_bfcp_audio	= (0x01 << 8)/*must*/ | tmedia_bfcp, /* do not add "| audio". Otherwise it will be impossible to start an "video+bfcp-audio" session. */
+    tmedia_bfcp_video	= (0x01 << 9)/*must*/ | tmedia_bfcp, /* do not add "| video". Otherwise it will be impossible to start an "audio+bfcp-video" session. */
 
     tmedia_msrp = (tmedia_chat | tmedia_file),
     tmedia_audiovideo = (tmedia_audio | tmedia_video),
@@ -125,19 +125,24 @@ tmedia_profile_t;
 // @tinyWRAP
 typedef enum tmedia_pref_video_size_s {
     /* must be sorted like this */
-    tmedia_pref_video_size_sqcif, // 128 x 98
-    tmedia_pref_video_size_qcif, // 176 x 144
-    tmedia_pref_video_size_qvga, // 320 x 240
-    tmedia_pref_video_size_cif, // 352 x 288
-    tmedia_pref_video_size_hvga, // 480 x 320
-    tmedia_pref_video_size_vga, // 640 x 480
-    tmedia_pref_video_size_4cif, // 704 x 576
-    tmedia_pref_video_size_wvga, // 800 x 480
-    tmedia_pref_video_size_svga, // 800 x 600
-    tmedia_pref_video_size_480p, // 852 x 480
-    tmedia_pref_video_size_xga, // 1024 x 768
-    tmedia_pref_video_size_720p, // 1280 x 720
+    tmedia_pref_video_size_sqcif, // 128  x 98
+    tmedia_pref_video_size_qcif,  // 176  x 144
+    tmedia_pref_video_size_qvga,  // 320  x 240
+    tmedia_pref_video_size_cif,   // 352  x 288
+    tmedia_pref_video_size_hvga,  // 480  x 320
+
+    tmedia_pref_video_size_360p,  // 640  x 360
+    tmedia_pref_video_size_vga,   // 640  x 480
+    tmedia_pref_video_size_4cif,  // 704  x 576
+    tmedia_pref_video_size_wvga,  // 800  x 480
+    tmedia_pref_video_size_svga,  // 800  x 600
+
+    tmedia_pref_video_size_480p,  // 852  x 480
+    tmedia_pref_video_size_540p,  // 960  x 540, iOS
+    tmedia_pref_video_size_xga,   // 1024 x 768
+    tmedia_pref_video_size_720p,  // 1280 x 720
     tmedia_pref_video_size_16cif, // 1408 x 1152
+
     tmedia_pref_video_size_1080p, // 1920 x 1080
     tmedia_pref_video_size_2160p, // 3840 x 2160
 }
@@ -240,10 +245,10 @@ typedef enum tmedia_bandwidth_level_e {
 tmedia_bandwidth_level_t;
 
 typedef enum tmedia_ro_type_e {
-    tmedia_ro_type_none = 0x00,
-    tmedia_ro_type_offer = (0x01 << 0),
-    tmedia_ro_type_answer = (0x01 << 1),
-    tmedia_ro_type_provisional = tmedia_ro_type_answer | (0x01 << 2),
+    tmedia_ro_type_none        =  0x00,
+    tmedia_ro_type_offer       = (0x01 << 0),
+    tmedia_ro_type_answer      = (0x01 << 1),
+    tmedia_ro_type_provisional = (0x01 << 2) | tmedia_ro_type_answer,
 }
 tmedia_ro_type_t;
 

@@ -301,19 +301,19 @@ typedef enum tmedia_t140_data_type_e
 {
 	tmedia_t140_data_type_utf8,
 	tmedia_t140_data_type_zero_width_no_break_space = 0xefbbbf,
-	tmedia_t140_data_type_backspace = 0x08,
-	tmedia_t140_data_type_esc = 0x1b,
-	tmedia_t140_data_type_cr = 0x0d,
-	tmedia_t140_data_type_lf = 0x0a,
-	tmedia_t140_data_type_cr_lf = 0x0d0a,
-	tmedia_t140_data_type_interrupt2 = 0x61,
-	tmedia_t140_data_type_bell = 0x07,
-	tmedia_t140_data_type_sos = 0x98,
-	tmedia_t140_data_type_string_term = 0x9c,
-	tmedia_t140_data_type_graphic_start = 0x9b,
-	tmedia_t140_data_type_graphic_end = 0x6d,
+	tmedia_t140_data_type_backspace      = 0x08,
+	tmedia_t140_data_type_esc            = 0x1b,
+	tmedia_t140_data_type_cr             = 0x0d,
+	tmedia_t140_data_type_lf             = 0x0a,
+	tmedia_t140_data_type_cr_lf          = 0x0d0a,
+	tmedia_t140_data_type_interrupt2     = 0x61,
+	tmedia_t140_data_type_bell           = 0x07,
+	tmedia_t140_data_type_sos            = 0x98,
+	tmedia_t140_data_type_string_term    = 0x9c,
+	tmedia_t140_data_type_graphic_start  = 0x9b,
+	tmedia_t140_data_type_graphic_end    = 0x6d,
 	tmedia_t140_data_type_loss_char_char = 0xfffd,
-	tmedia_t140_data_type_loss_utf8 = 0xefbfbd,
+	tmedia_t140_data_type_loss_utf8      = 0xefbfbd,
 }
 tmedia_t140_data_type_t;
 
@@ -346,19 +346,24 @@ tmedia_bandwidth_level_t;
 /* ====== From "tinymedia/tmedia_common.h"  ====== */
 typedef enum tmedia_pref_video_size_s
 { /* must be sorted like this */
-	tmedia_pref_video_size_sqcif, // 128 x 98
-	tmedia_pref_video_size_qcif, // 176 x 144
-	tmedia_pref_video_size_qvga, // 320 x 240
-	tmedia_pref_video_size_cif, // 352 x 288
-	tmedia_pref_video_size_hvga, // 480 x 320
-	tmedia_pref_video_size_vga, // 640 x 480
-	tmedia_pref_video_size_4cif, // 704 x 576
-	tmedia_pref_video_size_wvga, // 800 x 480
-	tmedia_pref_video_size_svga, // 800 x 600
-	tmedia_pref_video_size_480p, // 852 x 480
-	tmedia_pref_video_size_xga, // 1024 x 768
-	tmedia_pref_video_size_720p, // 1280 x 720
+	tmedia_pref_video_size_sqcif, // 128  x 98
+	tmedia_pref_video_size_qcif,  // 176  x 144
+	tmedia_pref_video_size_qvga,  // 320  x 240
+	tmedia_pref_video_size_cif,   // 352  x 288
+	tmedia_pref_video_size_hvga,  // 480  x 320
+
+	tmedia_pref_video_size_360p,  // 640  x 360
+	tmedia_pref_video_size_vga,   // 640  x 480
+	tmedia_pref_video_size_4cif,  // 704  x 576
+	tmedia_pref_video_size_wvga,  // 800  x 480
+	tmedia_pref_video_size_svga,  // 800  x 600
+
+	tmedia_pref_video_size_480p,  // 852  x 480
+	tmedia_pref_video_size_540p,  // 960  x 540, iOS
+	tmedia_pref_video_size_xga,   // 1024 x 768
+	tmedia_pref_video_size_720p,  // 1280 x 720
 	tmedia_pref_video_size_16cif, // 1408 x 1152
+
 	tmedia_pref_video_size_1080p, // 1920 x 1080
 	tmedia_pref_video_size_2160p, // 3840 x 2160
 }
@@ -374,40 +379,40 @@ typedef enum tmedia_codec_id_e
 	tmedia_codec_id_amr_nb_be = 0x00000001<<1,
 	tmedia_codec_id_amr_wb_oa = 0x00000001<<2,
 	tmedia_codec_id_amr_wb_be = 0x00000001<<3,
-	tmedia_codec_id_gsm = 0x00000001<<4,
-	tmedia_codec_id_pcma = 0x00000001<<5,
-	tmedia_codec_id_pcmu = 0x00000001<<6,
-	tmedia_codec_id_ilbc = 0x00000001<<7,
-	tmedia_codec_id_speex_nb = 0x00000001<<8,
-	tmedia_codec_id_speex_wb = 0x00000001<<9,
+	tmedia_codec_id_gsm       = 0x00000001<<4,
+	tmedia_codec_id_pcma      = 0x00000001<<5,
+	tmedia_codec_id_pcmu      = 0x00000001<<6,
+	tmedia_codec_id_ilbc      = 0x00000001<<7,
+	tmedia_codec_id_speex_nb  = 0x00000001<<8,
+	tmedia_codec_id_speex_wb  = 0x00000001<<9,
 	tmedia_codec_id_speex_uwb = 0x00000001<<10,
-	tmedia_codec_id_bv16 = 0x00000001<<11,
-	tmedia_codec_id_bv32 = 0x00000001<<12,
-	tmedia_codec_id_opus = 0x00000001<<13,
-	tmedia_codec_id_g729ab = 0x00000001<<14,
-	tmedia_codec_id_g722 = 0x00000001<<15,
+	tmedia_codec_id_bv16      = 0x00000001<<11,
+	tmedia_codec_id_bv32      = 0x00000001<<12,
+	tmedia_codec_id_opus      = 0x00000001<<13,
+	tmedia_codec_id_g729ab    = 0x00000001<<14,
+	tmedia_codec_id_g722      = 0x00000001<<15,
 	
 	/* room for new Audio codecs */
 	
-	tmedia_codec_id_h261 = 0x00010000<<0,
-	tmedia_codec_id_h263 = 0x00010000<<1,
-	tmedia_codec_id_h263p = 0x00010000<<2,
-	tmedia_codec_id_h263pp = 0x00010000<<3,
-	tmedia_codec_id_h264_bp = 0x00010000<<4,
-	tmedia_codec_id_h264_mp = 0x00010000<<5,
-	tmedia_codec_id_h264_hp = 0x00010000<<6,
+	tmedia_codec_id_h261      = 0x00010000<<0,
+	tmedia_codec_id_h263      = 0x00010000<<1,
+	tmedia_codec_id_h263p     = 0x00010000<<2,
+	tmedia_codec_id_h263pp    = 0x00010000<<3,
+	tmedia_codec_id_h264_bp   = 0x00010000<<4,
+	tmedia_codec_id_h264_mp   = 0x00010000<<5,
+	tmedia_codec_id_h264_hp   = 0x00010000<<6,
 	tmedia_codec_id_h264_bp10 = tmedia_codec_id_h264_bp, // @deprecated
 	tmedia_codec_id_h264_bp20 = tmedia_codec_id_h264_bp, // @deprecated
 	tmedia_codec_id_h264_bp30 = tmedia_codec_id_h264_bp, // @deprecated
-	tmedia_codec_id_h264_svc = 0x00010000<<7,
-	tmedia_codec_id_theora = 0x00010000<<8,
+	tmedia_codec_id_h264_svc  = 0x00010000<<7,
+	tmedia_codec_id_theora    = 0x00010000<<8,
 	tmedia_codec_id_mp4ves_es = 0x00010000<<9,
-	tmedia_codec_id_vp8 = 0x00010000<<10,
+	tmedia_codec_id_vp8       = 0x00010000<<10,
 
 	/* room for new Video codecs */
 
-	tmedia_codec_id_t140 = 0x00010000<<14,
-	tmedia_codec_id_red = 0x00010000<<15,
+	tmedia_codec_id_t140      = 0x00010000<<14,
+	tmedia_codec_id_red       = 0x00010000<<15,
 }
 tmedia_codec_id_t;
 
@@ -421,39 +426,39 @@ typedef enum tdav_codec_id_e
 	tdav_codec_id_amr_nb_be = 0x00000001<<1,
 	tdav_codec_id_amr_wb_oa = 0x00000001<<2,
 	tdav_codec_id_amr_wb_be = 0x00000001<<3,
-	tdav_codec_id_gsm = 0x00000001<<4,
-	tdav_codec_id_pcma = 0x00000001<<5,
-	tdav_codec_id_pcmu = 0x00000001<<6,
-	tdav_codec_id_ilbc = 0x00000001<<7,
-	tdav_codec_id_speex_nb = 0x00000001<<8,
-	tdav_codec_id_speex_wb = 0x00000001<<9,
+	tdav_codec_id_gsm       = 0x00000001<<4,
+	tdav_codec_id_pcma      = 0x00000001<<5,
+	tdav_codec_id_pcmu      = 0x00000001<<6,
+	tdav_codec_id_ilbc      = 0x00000001<<7,
+	tdav_codec_id_speex_nb  = 0x00000001<<8,
+	tdav_codec_id_speex_wb  = 0x00000001<<9,
 	tdav_codec_id_speex_uwb = 0x00000001<<10,
-	tdav_codec_id_bv16 = 0x00000001<<11,
-	tdav_codec_id_bv32 = 0x00000001<<12,
-	tdav_codec_id_opus = 0x00000001<<13,
-	tdav_codec_id_g729ab = 0x00000001<<14,
-	tdav_codec_id_g722 = 0x00000001<<15,
+	tdav_codec_id_bv16      = 0x00000001<<11,
+	tdav_codec_id_bv32      = 0x00000001<<12,
+	tdav_codec_id_opus      = 0x00000001<<13,
+	tdav_codec_id_g729ab    = 0x00000001<<14,
+	tdav_codec_id_g722      = 0x00000001<<15,
 	
 	/* room for new Audio codecs */
 	
-	tdav_codec_id_h261 = 0x00010000<<0,
-	tdav_codec_id_h263 = 0x00010000<<1,
-	tdav_codec_id_h263p = 0x00010000<<2,
-	tdav_codec_id_h263pp = 0x00010000<<3,
-	tdav_codec_id_h264_bp = 0x00010000<<4,
-	tdav_codec_id_h264_mp = 0x00010000<<5,
-	tdav_codec_id_h264_hp = 0x00010000<<6,
+	tdav_codec_id_h261      = 0x00010000<<0,
+	tdav_codec_id_h263      = 0x00010000<<1,
+	tdav_codec_id_h263p     = 0x00010000<<2,
+	tdav_codec_id_h263pp    = 0x00010000<<3,
+	tdav_codec_id_h264_bp   = 0x00010000<<4,
+	tdav_codec_id_h264_mp   = 0x00010000<<5,
+	tdav_codec_id_h264_hp   = 0x00010000<<6,
 	tdav_codec_id_h264_bp10 = tdav_codec_id_h264_bp, // @deprecated
 	tdav_codec_id_h264_bp20 = tdav_codec_id_h264_bp, // @deprecated
 	tdav_codec_id_h264_bp30 = tdav_codec_id_h264_bp, // @deprecated
-	tdav_codec_id_h264_svc = 0x00010000<<7,
-	tdav_codec_id_theora = 0x00010000<<8,
+	tdav_codec_id_h264_svc  = 0x00010000<<7,
+	tdav_codec_id_theora    = 0x00010000<<8,
 	tdav_codec_id_mp4ves_es = 0x00010000<<9,
-	tdav_codec_id_vp8 = 0x00010000<<10,
+	tdav_codec_id_vp8       = 0x00010000<<10,
 
 	/* room for new Video codecs */
 
-	tdav_codec_id_t140 = 0x00010000<<14,
-	tdav_codec_id_red = 0x00010000<<15,
+	tdav_codec_id_t140      = 0x00010000<<14,
+	tdav_codec_id_red       = 0x00010000<<15,
 }
 tdav_codec_id_t;

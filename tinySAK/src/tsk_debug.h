@@ -143,6 +143,12 @@ typedef int (*tsk_debug_f)(const void* arg, const char* fmt, ...);
 			fprintf(stderr, "****[DOUBANGO FATAL]: function: \"%s()\" \nfile: \"%s\" \nline: \"%u\" \nMSG: " FMT "\n", __FUNCTION__,  __FILE__, __LINE__, ##__VA_ARGS__); \
 	}
 
+#define UINT32_TO_BYTES(value, data)    {(data)[0]=(((value)>>24)& 0xFF);(data)[1]=(((value)>>16) & 0xFF);(data)[2]=(((value)>>8)& 0xFF);(data)[3]=((value) & 0xFF);}
+#define BYTES_TO_UINT32(data)          (((data)[0] << 24) | ((data)[1] << 16) | ((data)[2] << 8) | ((data)[3]))
+
+#define UINT16_TO_BYTES(value, data)    {(data)[0]=(((value)>> 8)& 0xFF);(data)[1]=((value) & 0xFF);}
+#define BYTES_TO_UINT16(data)          (((data)[0] <<  8) | ((data)[1]))
+
 
 TINYSAK_API void tsk_debug_set_arg_data(const void*);
 TINYSAK_API const void* tsk_debug_get_arg_data();
@@ -154,7 +160,8 @@ TINYSAK_API void tsk_debug_set_error_cb(tsk_debug_f );
 TINYSAK_API tsk_debug_f tsk_debug_get_error_cb( );
 TINYSAK_API void tsk_debug_set_fatal_cb(tsk_debug_f );
 TINYSAK_API tsk_debug_f tsk_debug_get_fatal_cb( );
-TINYSAK_API int tsk_debug_get_level( );
+
+TINYSAK_API int  tsk_debug_get_level( );
 TINYSAK_API void tsk_debug_set_level(int );
 
 #endif /* TSK_HAVE_DEBUG_H */
