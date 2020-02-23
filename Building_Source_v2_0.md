@@ -128,8 +128,8 @@ cp -rf ./lib/* ${BUILD_LIBS}/lib
 ### Building g729 ###
 **G729** is optional. Adds support for **G.729** audio codec.
 ```
-git clone https://github.com/quantum6/g729
-cd g729
+git clone https://github.com/quantum6/libg729
+cd libg729
 
 automake --add-missing
 ./autogen.sh
