@@ -1,6 +1,9 @@
 This section explains how to build the project using **CentOS 64** but could be easily adapted for any _Linux_, _Windows_ or _OS X_.<br />
 
 
+## Before buiding, set enviroments ##
+BUILD_LIBS=${HOME}/telecom/build_libs
+export PATH=${BUILD_LIBS}/bin:${PATH}
 
 
 ## Preparing the system ##
