@@ -115,19 +115,28 @@ sudo yum install gsm-devel
 ```
 Or build the source by yourself:
 ```
-wget http://www.quut.com/gsm/gsm-1.0.13.tar.gz
-tar -xvzf gsm-1.0.13.tar.gz
-cd gsm-1.0-pl13 && make && make install
-#cp -rf ./inc/* /usr/local/include
-#cp -rf ./lib/* /usr/local/lib
+git clone https://github.com/quantum6/libgsm
+cd libgsm
+make
+ 
+make install
+ 
+cp -rf ./inc/* ${BUILD_LIBS}/include
+cp -rf ./lib/* ${BUILD_LIBS}/lib
 ```
 
 ### Building g729 ###
 **G729** is optional. Adds support for **G.729** audio codec.
 ```
-svn co http://g729.googlecode.com/svn/trunk/ g729b
-cd g729b
-./autogen.sh && ./configure --enable-static --disable-shared && make && make install
+git clone https://github.com/quantum6/g729
+cd g729
+
+automake --add-missing
+./autogen.sh
+./configure --prefix=${BUILD_LIBS} --with-pic
+
+make
+make install
 ```
 
 ### Building iLBC ###
@@ -194,19 +203,20 @@ make install
 ```
 
 ### Building Doubango ###
+git clone https://github.com/quantum6/doubango-quantum6
   * Minimal build
 ```
-cd doubango && ./autogen.sh && ./configure --with-ssl --with-srtp --with-speexdsp
+cd doubango-quantum6 && ./autogen.sh && ./configure --with-ssl --with-srtp --with-speexdsp
 make && make install
 ```
   * Recommended build
 ```
-cd doubango && ./autogen.sh && ./configure --with-ssl --with-srtp --with-speexdsp --with-ffmpeg --with-opus
+cd doubango-quantum6 && ./autogen.sh && ./configure --with-ssl --with-srtp --with-speexdsp --with-ffmpeg --with-opus
 make && make install
 ```
   * Full build
 ```
-cd doubango && ./autogen.sh && ./configure --with-ssl --with-srtp --with-vpx --with-yuv --with-amr --with-speex --with-speexdsp --enable-speexresampler --enable-speexdenoiser --with-opus --with-gsm --with-ilbc --with-g729 --with-ffmpeg
+cd doubango-quantum6 && ./autogen.sh && ./configure --with-ssl --with-srtp --with-vpx --with-yuv --with-amr --with-speex --with-speexdsp --enable-speexresampler --enable-speexdenoiser --with-opus --with-gsm --with-ilbc --with-g729 --with-ffmpeg
 make && make install
 ```
 
