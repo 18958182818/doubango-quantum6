@@ -523,8 +523,8 @@ typedef struct tdav_converter_video_ffmpeg_s {
 
     struct SwsContext *context;
 
-    enum PixelFormat srcFormat;
-    enum PixelFormat dstFormat;
+    enum AVPixelFormat srcFormat;
+    enum AVPixelFormat dstFormat;
 
     AVFrame* srcFrame;
     AVFrame* dstFrame;
@@ -562,34 +562,34 @@ tdav_converter_video_ffmpeg_t;
     frame->linesize[2] *= -1;
 
 
-static inline enum PixelFormat _tdav_converter_video_ffmpeg_get_pixfmt(tmedia_chroma_t chroma)
+static inline enum AVPixelFormat _tdav_converter_video_ffmpeg_get_pixfmt(tmedia_chroma_t chroma)
 {
     switch(chroma) {
     case tmedia_chroma_rgb24:
-            return PIX_FMT_RGB24;
+            return AV_PIX_FMT_RGB24;
     case tmedia_chroma_bgr24:
-        return PIX_FMT_BGR24;
+        return AV_PIX_FMT_BGR24;
     case tmedia_chroma_rgb32:
-        return PIX_FMT_RGB32;
+        return AV_PIX_FMT_RGB32;
     case tmedia_chroma_rgb565le:
-        return PIX_FMT_RGB565LE;
+        return AV_PIX_FMT_RGB565LE;
     case tmedia_chroma_rgb565be:
-        return PIX_FMT_RGB565BE;
+        return AV_PIX_FMT_RGB565BE;
     case tmedia_chroma_nv21:
-        return PIX_FMT_NV21;
+        return AV_PIX_FMT_NV21;
     case tmedia_chroma_nv12:
-        return PIX_FMT_NV12;
+        return AV_PIX_FMT_NV12;
     case tmedia_chroma_yuv422p:
-        return PIX_FMT_YUV422P;
+        return AV_PIX_FMT_YUV422P;
     case tmedia_chroma_uyvy422:
-        return PIX_FMT_UYVY422;
+        return AV_PIX_FMT_UYVY422;
     case tmedia_chroma_yuyv422:
-        return PIX_FMT_YUYV422;
+        return AV_PIX_FMT_YUYV422;
     case tmedia_chroma_yuv420p:
-        return PIX_FMT_YUV420P;
+        return AV_PIX_FMT_YUV420P;
     default:
         TSK_DEBUG_ERROR("Invalid chroma %d", (int)chroma);
-        return PIX_FMT_NONE;
+        return AV_PIX_FMT_NONE;
     }
 }
 
@@ -598,11 +598,11 @@ static int tdav_converter_video_ffmpeg_init(tmedia_converter_video_t* self, tsk_
 {
     TSK_DEBUG_INFO("Initializing new FFmpeg Video Converter src=(%dx%d@%d) dst=(%dx%d@%d)", srcWidth, srcHeight, srcChroma, dstWidth, dstHeight, dstChroma);
 
-    if((TDAV_CONVERTER_VIDEO_FFMPEG(self)->srcFormat = _tdav_converter_video_ffmpeg_get_pixfmt(srcChroma)) == PIX_FMT_NONE) {
+    if((TDAV_CONVERTER_VIDEO_FFMPEG(self)->srcFormat = _tdav_converter_video_ffmpeg_get_pixfmt(srcChroma)) == AV_PIX_FMT_NONE) {
         TSK_DEBUG_ERROR("Invalid source chroma");
         return -2;
     }
-    if((TDAV_CONVERTER_VIDEO_FFMPEG(self)->dstFormat = _tdav_converter_video_ffmpeg_get_pixfmt(dstChroma)) == PIX_FMT_NONE) {
+    if((TDAV_CONVERTER_VIDEO_FFMPEG(self)->dstFormat = _tdav_converter_video_ffmpeg_get_pixfmt(dstChroma)) == AV_PIX_FMT_NONE) {
         TSK_DEBUG_ERROR("Invalid destination chroma");
         return -3;
     }
@@ -623,13 +623,13 @@ static tsk_size_t tdav_converter_video_ffmpeg_process(tmedia_converter_video_t* 
 
     /* Pictures */
     if (!self->srcFrame) {
-        if (!(self->srcFrame = avcodec_alloc_frame())) {
+        if (!(self->srcFrame = av_frame_alloc())) {
             TSK_DEBUG_ERROR("Failed to create picture");
             return 0;
         }
     }
     if (!self->dstFrame) {
-        if (!(self->dstFrame = avcodec_alloc_frame())) {
+        if (!(self->dstFrame = av_frame_alloc())) {
             TSK_DEBUG_ERROR("Failed to create picture");
             return 0;
         }
@@ -637,7 +637,7 @@ static tsk_size_t tdav_converter_video_ffmpeg_process(tmedia_converter_video_t* 
 
     size = avpicture_get_size(self->dstFormat, (int)_self->dstWidth, (int)_self->dstHeight);
     if ((int)*output_max_size < size) {
-        if (!(*output = tsk_realloc(*output, (size + FF_INPUT_BUFFER_PADDING_SIZE)))) {
+        if (!(*output = tsk_realloc(*output, (size + AV_INPUT_BUFFER_PADDING_SIZE)))) {
             *output_max_size = 0;
             TSK_DEBUG_ERROR("Failed to allocate buffer");
             return 0;
@@ -665,7 +665,7 @@ static tsk_size_t tdav_converter_video_ffmpeg_process(tmedia_converter_video_t* 
     }
 
     /*FIXME: For now only 90\B0 rotation is supported this is why we always use libyuv on mobile devices */
-    _rotate = (PIX_FMT_YUV420P == self->dstFormat) && _self->rotation == 90;
+    _rotate = (AV_PIX_FMT_YUV420P == self->dstFormat) && _self->rotation == 90;
 
     // if no rotation then, flip while scaling othersize do it after rotation
     if (!_rotate && _self->flip) {
@@ -687,7 +687,7 @@ static tsk_size_t tdav_converter_video_ffmpeg_process(tmedia_converter_video_t* 
         int h = (int)_self->dstWidth;
 
         // allocation rotation frame if not already done
-        if (!(self->rot.frame) && !(self->rot.frame = avcodec_alloc_frame())) {
+        if (!(self->rot.frame) && !(self->rot.frame = av_frame_alloc())) {
             TSK_DEBUG_ERROR("failed to allocate rotation frame");
             TSK_FREE(*output);
             return(0);
@@ -739,7 +739,7 @@ static tsk_size_t tdav_converter_video_ffmpeg_process(tmedia_converter_video_t* 
 
             r_size = avpicture_get_size(self->dstFormat, r_w, r_h);
             if ((int)*output_max_size < r_size) {
-                if (!(*output = tsk_realloc(*output, (r_size + FF_INPUT_BUFFER_PADDING_SIZE)))) {
+                if (!(*output = tsk_realloc(*output, (r_size + AV_INPUT_BUFFER_PADDING_SIZE)))) {
                     *output_max_size = 0;
                     TSK_DEBUG_ERROR("Failed to allocate buffer");
                     return 0;

@@ -45,6 +45,7 @@
 #include "tsk_debug.h"
 
 #if HAVE_FFMPEG
+#   include <libavfilter/motion_estimation.h>
 #   include <libavcodec/avcodec.h>
 #   if (LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(51, 35, 0))
 #       include <libavutil/opt.h>
@@ -264,7 +265,7 @@ static tsk_size_t tdav_codec_h264_encode(tmedia_codec_t* self, const void* in_da
     }
     else { // !h264->encoder.passthrough
 #if HAVE_FFMPEG		// wrap yuv420 buffer
-        size = avpicture_fill((AVPicture *)h264->encoder.picture, (uint8_t*)in_data, PIX_FMT_YUV420P, h264->encoder.context->width, h264->encoder.context->height);
+        size = avpicture_fill((AVPicture *)h264->encoder.picture, (uint8_t*)in_data, AV_PIX_FMT_YUV420P, h264->encoder.context->width, h264->encoder.context->height);
         if (size != in_size) {
             /* guard */
             TSK_DEBUG_ERROR("Invalid size: %u<>%u", size, in_size);
@@ -457,7 +458,7 @@ static tsk_size_t tdav_codec_h264_decode(tmedia_codec_t* self, const void* in_da
                 /* fill out */
                 xsize = avpicture_get_size(h264->decoder.context->pix_fmt, h264->decoder.context->width, h264->decoder.context->height);
                 if(*out_max_size<xsize) {
-                    if((*out_data = tsk_realloc(*out_data, (xsize + FF_INPUT_BUFFER_PADDING_SIZE)))) {
+                    if((*out_data = tsk_realloc(*out_data, (xsize + AV_INPUT_BUFFER_PADDING_SIZE)))) {
                         *out_max_size = xsize;
                     }
                     else {
@@ -699,7 +700,7 @@ int tdav_codec_h264_open_encoder(tdav_codec_h264_t* self)
     self->encoder.context->dsp_mask = (FF_MM_MMX | FF_MM_MMXEXT | FF_MM_SSE);
 #endif
 
-    self->encoder.context->pix_fmt		= PIX_FMT_YUV420P;
+    self->encoder.context->pix_fmt		= AV_PIX_FMT_YUV420P;
     self->encoder.context->time_base.num  = 1;
     self->encoder.context->time_base.den  = TMEDIA_CODEC_VIDEO(self)->out.fps;
     self->encoder.context->width = (self->encoder.rotation == 90 || self->encoder.rotation == 270) ? TMEDIA_CODEC_VIDEO(self)->out.height : TMEDIA_CODEC_VIDEO(self)->out.width;
@@ -722,7 +723,7 @@ int tdav_codec_h264_open_encoder(tdav_codec_h264_t* self)
 #if LIBAVCODEC_VERSION_MAJOR <= 53
     self->encoder.context->partitions = X264_PART_I4X4 | X264_PART_I8X8 | X264_PART_P8X8 | X264_PART_B8X8;
 #endif
-    self->encoder.context->me_method = ME_UMH;
+    self->encoder.context->prediction_method = AV_ME_METHOD_UMH;
     self->encoder.context->me_range = 16;
     self->encoder.context->qmin = 10;
     self->encoder.context->qmax = 51;
@@ -732,9 +733,9 @@ int tdav_codec_h264_open_encoder(tdav_codec_h264_t* self)
 #endif
     /* METROPOLIS = G2J.COM TelePresence client. Check Issue 378: No video when calling "TANDBERG/4129 (X8.1.1)" */
 #if !METROPOLIS  && 0
-    self->encoder.context->flags |= CODEC_FLAG_GLOBAL_HEADER;
+    self->encoder.context->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 #endif
-    self->encoder.context->flags |= CODEC_FLAG_LOW_DELAY;
+    self->encoder.context->flags |= AV_CODEC_FLAG_LOW_DELAY;
     if (self->encoder.context->profile == FF_PROFILE_H264_BASELINE) {
         self->encoder.context->max_b_frames = 0;
     }
@@ -787,7 +788,7 @@ int tdav_codec_h264_open_encoder(tdav_codec_h264_t* self)
     avcodec_get_frame_defaults(self->encoder.picture);
 
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
     if(!(self->encoder.buffer = tsk_calloc(size, sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate encoder buffer");
         return -2;
@@ -850,8 +851,8 @@ int tdav_codec_h264_open_decoder(tdav_codec_h264_t* self)
     self->decoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(self->decoder.context);
 
-    self->decoder.context->pix_fmt = PIX_FMT_YUV420P;
-    self->decoder.context->flags2 |= CODEC_FLAG2_FAST;
+    self->decoder.context->pix_fmt = AV_PIX_FMT_YUV420P;
+    self->decoder.context->flags2 |= AV_CODEC_FLAG2_FAST;
     self->decoder.context->width = TMEDIA_CODEC_VIDEO(self)->in.width;
     self->decoder.context->height = TMEDIA_CODEC_VIDEO(self)->in.height;
 
@@ -927,12 +928,12 @@ int tdav_codec_h264_init(tdav_codec_h264_t* self, profile_idc_t profile)
     TMEDIA_CODEC_VIDEO(self)->in.max_br = TMEDIA_CODEC_VIDEO(self)->out.max_br = H264_MAX_BR*1000;
 
 #if HAVE_FFMPEG
-    if(!(self->encoder.codec = avcodec_find_encoder(CODEC_ID_H264))) {
+    if(!(self->encoder.codec = avcodec_find_encoder(AV_CODEC_ID_H264))) {
         TSK_DEBUG_ERROR("Failed to find H.264 encoder");
         ret = -2;
     }
 
-    if(!(self->decoder.codec = avcodec_find_decoder(CODEC_ID_H264))) {
+    if(!(self->decoder.codec = avcodec_find_decoder(AV_CODEC_ID_H264))) {
         TSK_DEBUG_ERROR("Failed to find H.264 decoder");
         ret = -3;
     }
@@ -969,7 +970,7 @@ int tdav_codec_h264_deinit(tdav_codec_h264_t* self)
 tsk_bool_t tdav_codec_ffmpeg_h264_is_supported()
 {
 #if HAVE_FFMPEG
-    return (avcodec_find_encoder(CODEC_ID_H264) && avcodec_find_decoder(CODEC_ID_H264));
+    return (avcodec_find_encoder(AV_CODEC_ID_H264) && avcodec_find_decoder(AV_CODEC_ID_H264));
 #else
     return tsk_false;
 #endif

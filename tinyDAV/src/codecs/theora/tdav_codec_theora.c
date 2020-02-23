@@ -237,7 +237,7 @@ tsk_size_t tdav_codec_theora_encode(tmedia_codec_t* self, const void* in_data, t
     }
 
     // wrap yuv420 buffer
-    size = avpicture_fill((AVPicture *)theora->encoder.picture, (uint8_t*)in_data, PIX_FMT_YUV420P, theora->encoder.context->width, theora->encoder.context->height);
+    size = avpicture_fill((AVPicture *)theora->encoder.picture, (uint8_t*)in_data, AV_PIX_FMT_YUV420P, theora->encoder.context->width, theora->encoder.context->height);
     if(size != in_size) {
         /* guard */
         TSK_DEBUG_ERROR("Invalid size");
@@ -415,7 +415,7 @@ tsk_size_t tdav_codec_theora_decode(tmedia_codec_t* self, const void* in_data, t
                             if(theora->decoder.context->extradata) {
                                 TSK_FREE(theora->decoder.context->extradata);
                             }
-                            if((theora->decoder.context->extradata = tsk_calloc(extradata_size + FF_INPUT_BUFFER_PADDING_SIZE, 1))) {
+                            if((theora->decoder.context->extradata = tsk_calloc(extradata_size + AV_INPUT_BUFFER_PADDING_SIZE, 1))) {
                                 int index = 0;
                                 /* Because of endianess pb. do not use uint16_t or uint32_t */
                                 theora->decoder.context->extradata[index++] = 0x00;
@@ -591,7 +591,7 @@ int tdav_codec_theora_open_encoder(tdav_codec_theora_t* self)
 {
     int ret, size;
     int32_t max_bw_kpbs;
-    if(!self->encoder.codec && !(self->encoder.codec = avcodec_find_encoder(CODEC_ID_THEORA))) {
+    if(!self->encoder.codec && !(self->encoder.codec = avcodec_find_encoder(AV_CODEC_ID_THEORA))) {
         TSK_DEBUG_ERROR("Failed to find Theora encoder");
         return -1;
     }
@@ -602,7 +602,7 @@ int tdav_codec_theora_open_encoder(tdav_codec_theora_t* self)
     self->encoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(self->encoder.context);
 
-    self->encoder.context->pix_fmt		= PIX_FMT_YUV420P;
+    self->encoder.context->pix_fmt		= AV_PIX_FMT_YUV420P;
     self->encoder.context->time_base.num  = 1;
     self->encoder.context->time_base.den  = TMEDIA_CODEC_VIDEO(self)->out.fps;
     self->encoder.context->width = (self->encoder.rotation == 90 || self->encoder.rotation == 270) ? TMEDIA_CODEC_VIDEO(self)->out.height : TMEDIA_CODEC_VIDEO(self)->out.width;
@@ -633,7 +633,7 @@ int tdav_codec_theora_open_encoder(tdav_codec_theora_t* self)
     }
     avcodec_get_frame_defaults(self->encoder.picture);
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
     if(!(self->encoder.buffer = tsk_calloc(size, sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate encoder buffer");
         return -2;
@@ -656,7 +656,7 @@ int tdav_codec_theora_open_encoder(tdav_codec_theora_t* self)
 int tdav_codec_theora_open_decoder(tdav_codec_theora_t* self)
 {
     int size;
-    if(!self->decoder.codec && !(self->decoder.codec = avcodec_find_decoder(CODEC_ID_THEORA))) {
+    if(!self->decoder.codec && !(self->decoder.codec = avcodec_find_decoder(AV_CODEC_ID_THEORA))) {
         TSK_DEBUG_ERROR("Failed to find Theora decoder");
         return -1;
     }
@@ -667,7 +667,7 @@ int tdav_codec_theora_open_decoder(tdav_codec_theora_t* self)
     self->decoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(self->decoder.context);
 
-    self->decoder.context->pix_fmt = PIX_FMT_YUV420P;
+    self->decoder.context->pix_fmt = AV_PIX_FMT_YUV420P;
     self->decoder.context->width = TMEDIA_CODEC_VIDEO(self)->in.width;
     self->decoder.context->height = TMEDIA_CODEC_VIDEO(self)->in.height;
 
@@ -678,13 +678,13 @@ int tdav_codec_theora_open_decoder(tdav_codec_theora_t* self)
     }
     avcodec_get_frame_defaults(self->decoder.picture);
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, self->decoder.context->width, self->decoder.context->height);
-    if(!(self->decoder.accumulator = tsk_calloc((size + FF_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->decoder.context->width, self->decoder.context->height);
+    if(!(self->decoder.accumulator = tsk_calloc((size + AV_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate decoder buffer");
         return -2;
     }
 
-    if(!(self->decoder.accumulator = tsk_calloc((size + FF_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
+    if(!(self->decoder.accumulator = tsk_calloc((size + AV_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate decoder buffer");
         return -2;
     }
@@ -850,7 +850,7 @@ int tdav_codec_theora_send(tdav_codec_theora_t* self, const uint8_t* data, tsk_s
 
 tsk_bool_t tdav_codec_ffmpeg_theora_is_supported()
 {
-    return (avcodec_find_encoder(CODEC_ID_THEORA) && avcodec_find_decoder(CODEC_ID_THEORA));
+    return (avcodec_find_encoder(AV_CODEC_ID_THEORA) && avcodec_find_decoder(AV_CODEC_ID_THEORA));
 }
 
 #endif /* HAVE_FFMPEG */

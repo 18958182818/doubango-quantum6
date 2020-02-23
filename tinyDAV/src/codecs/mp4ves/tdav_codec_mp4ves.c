@@ -268,7 +268,7 @@ tsk_size_t tdav_codec_mp4ves_encode(tmedia_codec_t* self, const void* in_data, t
     }
 
     // wrap yuv420 buffer
-    size = avpicture_fill((AVPicture *)mp4v->encoder.picture, (uint8_t*)in_data, PIX_FMT_YUV420P, mp4v->encoder.context->width, mp4v->encoder.context->height);
+    size = avpicture_fill((AVPicture *)mp4v->encoder.picture, (uint8_t*)in_data, AV_PIX_FMT_YUV420P, mp4v->encoder.context->width, mp4v->encoder.context->height);
     if(size != in_size) {
         /* guard */
         TSK_DEBUG_ERROR("Invalid size");
@@ -459,7 +459,7 @@ int tdav_codec_mp4ves_open_encoder(tdav_codec_mp4ves_t* self)
 {
     int ret, size;
     int32_t max_bw_kpbs;
-    if(!self->encoder.codec && !(self->encoder.codec = avcodec_find_encoder(CODEC_ID_MPEG4))) {
+    if(!self->encoder.codec && !(self->encoder.codec = avcodec_find_encoder(AV_CODEC_ID_MPEG4))) {
         TSK_DEBUG_ERROR("Failed to find mp4v encoder");
         return -1;
     }
@@ -471,14 +471,14 @@ int tdav_codec_mp4ves_open_encoder(tdav_codec_mp4ves_t* self)
     self->encoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(self->encoder.context);
 
-    self->encoder.context->pix_fmt		= PIX_FMT_YUV420P;
+    self->encoder.context->pix_fmt		= AV_PIX_FMT_YUV420P;
     self->encoder.context->time_base.num  = 1;
     self->encoder.context->time_base.den  = TMEDIA_CODEC_VIDEO(self)->in.fps;
     self->encoder.context->width = (self->encoder.rotation == 90 || self->encoder.rotation == 270) ? TMEDIA_CODEC_VIDEO(self)->out.height : TMEDIA_CODEC_VIDEO(self)->out.width;
     self->encoder.context->height = (self->encoder.rotation == 90 || self->encoder.rotation == 270) ? TMEDIA_CODEC_VIDEO(self)->out.width : TMEDIA_CODEC_VIDEO(self)->out.height;
     self->encoder.context->mb_decision = FF_MB_DECISION_RD;
     self->encoder.context->noise_reduction = 250;
-    self->encoder.context->flags |= CODEC_FLAG_QSCALE;
+    self->encoder.context->flags |= AV_CODEC_FLAG_QSCALE;
     self->encoder.context->global_quality = FF_QP2LAMBDA * self->encoder.quality;
 
     max_bw_kpbs = TSK_CLAMP(
@@ -494,7 +494,7 @@ int tdav_codec_mp4ves_open_encoder(tdav_codec_mp4ves_t* self)
     self->encoder.context->gop_size = (TMEDIA_CODEC_VIDEO(self)->in.fps * MP4V_GOP_SIZE_IN_SECONDS);
     self->encoder.context->max_b_frames = 0;
     self->encoder.context->b_frame_strategy = 1;
-    self->encoder.context->flags |= CODEC_FLAG_AC_PRED;
+    self->encoder.context->flags |= AV_CODEC_FLAG_AC_PRED;
 
     // Picture (YUV 420)
     if(!(self->encoder.picture = avcodec_alloc_frame())) {
@@ -503,7 +503,7 @@ int tdav_codec_mp4ves_open_encoder(tdav_codec_mp4ves_t* self)
     }
     avcodec_get_frame_defaults(self->encoder.picture);
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
     if(!(self->encoder.buffer = tsk_calloc(size, sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate MP4V-ES encoder buffer");
         return -2;
@@ -524,7 +524,7 @@ int tdav_codec_mp4ves_open_decoder(tdav_codec_mp4ves_t* self)
 {
     int ret, size;
 
-    if(!self->decoder.codec  && !(self->decoder.codec = avcodec_find_decoder(CODEC_ID_MPEG4))) {
+    if(!self->decoder.codec  && !(self->decoder.codec = avcodec_find_decoder(AV_CODEC_ID_MPEG4))) {
         TSK_DEBUG_ERROR("Failed to find MP4V-ES decoder");
         return -1;
     }
@@ -537,7 +537,7 @@ int tdav_codec_mp4ves_open_decoder(tdav_codec_mp4ves_t* self)
     self->decoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(self->decoder.context);
 
-    self->decoder.context->pix_fmt = PIX_FMT_YUV420P;
+    self->decoder.context->pix_fmt = AV_PIX_FMT_YUV420P;
     self->decoder.context->width = TMEDIA_CODEC_VIDEO(self)->out.width;
     self->decoder.context->height = TMEDIA_CODEC_VIDEO(self)->out.height;
 
@@ -548,13 +548,13 @@ int tdav_codec_mp4ves_open_decoder(tdav_codec_mp4ves_t* self)
     }
     avcodec_get_frame_defaults(self->decoder.picture);
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, self->decoder.context->width, self->decoder.context->height);
-    if(!(self->decoder.accumulator = tsk_calloc((size + FF_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->decoder.context->width, self->decoder.context->height);
+    if(!(self->decoder.accumulator = tsk_calloc((size + AV_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate decoder buffer");
         return -2;
     }
 
-    if(!(self->decoder.accumulator = tsk_calloc((size + FF_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
+    if(!(self->decoder.accumulator = tsk_calloc((size + AV_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate decoder buffer");
         return -2;
     }
@@ -804,7 +804,7 @@ const tmedia_codec_plugin_def_t *tdav_codec_mp4ves_plugin_def_t = &tdav_codec_mp
 
 tsk_bool_t tdav_codec_ffmpeg_mp4ves_is_supported()
 {
-    return (avcodec_find_encoder(CODEC_ID_MPEG4) && avcodec_find_decoder(CODEC_ID_MPEG4));
+    return (avcodec_find_encoder(AV_CODEC_ID_MPEG4) && avcodec_find_decoder(AV_CODEC_ID_MPEG4));
 }
 
 #endif /* HAVE_FFMPEG */

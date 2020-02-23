@@ -72,14 +72,14 @@ int tdav_codec_h261_open(tmedia_codec_t* self)
     //
     //	Encoder
     //
-    if(!(h261->encoder.codec = avcodec_find_encoder(CODEC_ID_H261))) {
+    if(!(h261->encoder.codec = avcodec_find_encoder(AV_CODEC_ID_H261))) {
         TSK_DEBUG_ERROR("Failed to find H.261 encoder");
         return -2;
     }
     h261->encoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(h261->encoder.context);
 
-    h261->encoder.context->pix_fmt		= PIX_FMT_YUV420P;
+    h261->encoder.context->pix_fmt		= AV_PIX_FMT_YUV420P;
     h261->encoder.context->time_base.num  = 1;
     h261->encoder.context->time_base.den  = TMEDIA_CODEC_VIDEO(h261)->out.fps;
     h261->encoder.context->width = TMEDIA_CODEC_VIDEO(h261)->out.width;
@@ -107,7 +107,7 @@ int tdav_codec_h261_open(tmedia_codec_t* self)
     //	return ret;
     //}
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, h261->encoder.context->width, h261->encoder.context->height);
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, h261->encoder.context->width, h261->encoder.context->height);
     if(!(h261->encoder.buffer = tsk_calloc(size, sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate encoder buffer");
         return -2;
@@ -122,13 +122,13 @@ int tdav_codec_h261_open(tmedia_codec_t* self)
     //
     //	Decoder
     //
-    if(!(h261->decoder.codec = avcodec_find_decoder(CODEC_ID_H261))) {
+    if(!(h261->decoder.codec = avcodec_find_decoder(AV_CODEC_ID_H261))) {
         TSK_DEBUG_ERROR("Failed to find H.261 decoder");
     }
     h261->decoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(h261->decoder.context);
 
-    h261->decoder.context->pix_fmt = PIX_FMT_YUV420P;
+    h261->decoder.context->pix_fmt = AV_PIX_FMT_YUV420P;
     h261->decoder.context->width = TMEDIA_CODEC_VIDEO(h261)->in.width;
     h261->decoder.context->height = TMEDIA_CODEC_VIDEO(h261)->in.height;
 
@@ -139,8 +139,8 @@ int tdav_codec_h261_open(tmedia_codec_t* self)
     }
     avcodec_get_frame_defaults(h261->decoder.picture);
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, h261->decoder.context->width, h261->decoder.context->height);
-    if(!(h261->decoder.accumulator = tsk_calloc((size + FF_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, h261->decoder.context->width, h261->decoder.context->height);
+    if(!(h261->decoder.accumulator = tsk_calloc((size + AV_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate decoder buffer");
         return -2;
     }
@@ -218,7 +218,7 @@ tsk_size_t tdav_codec_h261_encode(tmedia_codec_t* self, const void* in_data, tsk
     }
 
     // wrap yuv420 buffer
-    size = avpicture_fill((AVPicture *)h261->encoder.picture, (uint8_t*)in_data, PIX_FMT_YUV420P, h261->encoder.context->width, h261->encoder.context->height);
+    size = avpicture_fill((AVPicture *)h261->encoder.picture, (uint8_t*)in_data, AV_PIX_FMT_YUV420P, h261->encoder.context->width, h261->encoder.context->height);
     if(size != in_size) {
         /* guard */
         TSK_DEBUG_ERROR("Invalid size");

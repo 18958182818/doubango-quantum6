@@ -292,7 +292,7 @@ static tsk_size_t tdav_codec_h263_encode(tmedia_codec_t* self, const void* in_da
     }
 
     // wrap yuv420 buffer
-    size = avpicture_fill((AVPicture *)h263->encoder.picture, (uint8_t*)in_data, PIX_FMT_YUV420P, h263->encoder.context->width, h263->encoder.context->height);
+    size = avpicture_fill((AVPicture *)h263->encoder.picture, (uint8_t*)in_data, AV_PIX_FMT_YUV420P, h263->encoder.context->width, h263->encoder.context->height);
     if(size != in_size) {
         /* guard */
         TSK_DEBUG_ERROR("Invalid size");
@@ -906,7 +906,7 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
     self->encoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(self->encoder.context);
 
-    self->encoder.context->pix_fmt		= PIX_FMT_YUV420P;
+    self->encoder.context->pix_fmt		= AV_PIX_FMT_YUV420P;
     self->encoder.context->time_base.num  = 1;
     self->encoder.context->time_base.den  = TMEDIA_CODEC_VIDEO(self)->out.fps;
     self->encoder.context->width = TMEDIA_CODEC_VIDEO(self)->out.width;
@@ -929,7 +929,7 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
     self->encoder.context->rtp_payload_size = RTP_PAYLOAD_SIZE;
     self->encoder.context->opaque = tsk_null;
     self->encoder.context->gop_size = (TMEDIA_CODEC_VIDEO(self)->out.fps * TDAV_H263_GOP_SIZE_IN_SECONDS);
-    self->encoder.context->flags |= CODEC_FLAG_QSCALE;
+    self->encoder.context->flags |= AV_CODEC_FLAG_QSCALE;
     self->encoder.context->global_quality = FF_QP2LAMBDA * self->encoder.quality;
     self->encoder.context->max_b_frames = 0;
 
@@ -939,12 +939,12 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
         return -2;
     }
     avcodec_get_frame_defaults(self->encoder.picture);
-    //if((ret = avpicture_alloc((AVPicture*)self->encoder.picture, PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height))){
+    //if((ret = avpicture_alloc((AVPicture*)self->encoder.picture, AV_PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height))){
     //	TSK_DEBUG_ERROR("Failed to allocate encoder picture");
     //	return ret;
     //}
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
     if(!(self->encoder.buffer = tsk_calloc(size, sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate encoder buffer");
         return -2;
@@ -960,25 +960,25 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
     case tdav_codec_h263_1998: {
         // H263 - 1998
 #if defined(CODEC_FLAG_H263P_UMV)
-        self->encoder.context->flags |= CODEC_FLAG_H263P_UMV;		// Annex D+
+        self->encoder.context->flags |= AV_CODEC_FLAG_H263P_UMV;		// Annex D+
 #endif
-        self->encoder.context->flags |= CODEC_FLAG_AC_PRED;			// Annex I and T
-        self->encoder.context->flags |= CODEC_FLAG_LOOP_FILTER;		// Annex J
+        self->encoder.context->flags |= AV_CODEC_FLAG_AC_PRED;			// Annex I and T
+        self->encoder.context->flags |= AV_CODEC_FLAG_LOOP_FILTER;		// Annex J
 #if defined(CODEC_FLAG_H263P_SLICE_STRUCT)
-        self->encoder.context->flags |= CODEC_FLAG_H263P_SLICE_STRUCT;	// Annex K
+        self->encoder.context->flags |= AV_CODEC_FLAG_H263P_SLICE_STRUCT;	// Annex K
 #endif
 #if defined(CODEC_FLAG_H263P_AIV)
-        self->encoder.context->flags |= CODEC_FLAG_H263P_AIV;			// Annex S
+        self->encoder.context->flags |= AV_CODEC_FLAG_H263P_AIV;			// Annex S
 #endif
         break;
     }
     case tdav_codec_h263_2000: {
         // H263 - 2000
 #if defined(CODEC_FLAG_H263P_UMV)
-        self->encoder.context->flags |= CODEC_FLAG_H263P_UMV;		// Annex D+
+        self->encoder.context->flags |= AV_CODEC_FLAG_H263P_UMV;		// Annex D+
 #endif
-        self->encoder.context->flags |= CODEC_FLAG_AC_PRED;			// Annex I and T
-        self->encoder.context->flags |= CODEC_FLAG_LOOP_FILTER;		// Annex J
+        self->encoder.context->flags |= AV_CODEC_FLAG_AC_PRED;			// Annex I and T
+        self->encoder.context->flags |= AV_CODEC_FLAG_LOOP_FILTER;		// Annex J
 #if defined(CODEC_FLAG_H263P_SLICE_STRUCT)
         self->encoder.context->flags |= CODEC_FLAG_H263P_SLICE_STRUCT;	// Annex K
 #endif
@@ -1011,7 +1011,7 @@ int tdav_codec_h263_open_decoder(tdav_codec_h263_t* self)
     self->decoder.context = avcodec_alloc_context();
     avcodec_get_context_defaults(self->decoder.context);
 
-    self->decoder.context->pix_fmt = PIX_FMT_YUV420P;
+    self->decoder.context->pix_fmt = AV_PIX_FMT_YUV420P;
     self->decoder.context->width = TMEDIA_CODEC_VIDEO(self)->in.width;
     self->decoder.context->height = TMEDIA_CODEC_VIDEO(self)->in.height;
 
@@ -1022,8 +1022,8 @@ int tdav_codec_h263_open_decoder(tdav_codec_h263_t* self)
     }
     avcodec_get_frame_defaults(self->decoder.picture);
 
-    size = avpicture_get_size(PIX_FMT_YUV420P, self->decoder.context->width, self->decoder.context->height);
-    if(!(self->decoder.accumulator = tsk_calloc((size + FF_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
+    size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->decoder.context->width, self->decoder.context->height);
+    if(!(self->decoder.accumulator = tsk_calloc((size + AV_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
         TSK_DEBUG_ERROR("Failed to allocate decoder buffer");
         return -2;
     }
