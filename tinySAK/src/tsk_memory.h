@@ -45,6 +45,9 @@
 
 TSK_BEGIN_DECLS
 
+typedef uint8_t   uint8;
+typedef uint32_t  uint32;
+
 #define TSK_SAFE_FREE(ptr) (void)tsk_free((void**)(&ptr))
 #define TSK_SAFE_FREE_ALIGNED(ptr) (void)tsk_free_aligned((void**)(&ptr))
 #define TSK_FREE(ptr) TSK_SAFE_FREE((ptr))

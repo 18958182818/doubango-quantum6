@@ -118,7 +118,7 @@ tdav_codec_h263_t;
 
 #define TDAV_DECLARE_CODEC_H263 tdav_codec_h263_t __codec_h263__
 
-static int tdav_codec_h263_init(tdav_codec_h263_t* self, tdav_codec_h263_type_t type, enum CodecID encoder, enum CodecID decoder);
+static int tdav_codec_h263_init(tdav_codec_h263_t* self, tdav_codec_h263_type_t type, enum AVCodecID encoder, enum AVCodecID decoder);
 static int tdav_codec_h263_deinit(tdav_codec_h263_t* self);
 static int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self);
 static int tdav_codec_h263_open_decoder(tdav_codec_h263_t* self);
@@ -178,7 +178,7 @@ static int tdav_codec_h263_set(tmedia_codec_t* self, const tmedia_param_t* param
     return -1;
 }
 
-int tdav_codec_h263_init(tdav_codec_h263_t* self, tdav_codec_h263_type_t type, enum CodecID encoder, enum CodecID decoder)
+int tdav_codec_h263_init(tdav_codec_h263_t* self, tdav_codec_h263_type_t type, enum AVCodecID encoder, enum AVCodecID decoder)
 {
     int ret = 0;
 
@@ -537,7 +537,7 @@ static tsk_object_t* tdav_codec_h263_ctor(tsk_object_t * self, va_list * app)
     if(h263) {
         /* init base: called by tmedia_codec_create() */
         /* init self */
-        tdav_codec_h263_init(TDAV_CODEC_H263(self), tdav_codec_h263_1996, CODEC_ID_H263, CODEC_ID_H263);
+        tdav_codec_h263_init(TDAV_CODEC_H263(self), tdav_codec_h263_1996, AV_CODEC_ID_H263, AV_CODEC_ID_H263);
     }
     return self;
 }
@@ -761,7 +761,7 @@ static tsk_object_t* tdav_codec_h263p_ctor(tsk_object_t * self, va_list * app)
     if(h263p) {
         /* init base: called by tmedia_codec_create() */
         /* init self */
-        tdav_codec_h263_init(TDAV_CODEC_H263(self), tdav_codec_h263_1998, CODEC_ID_H263P, CODEC_ID_H263);
+        tdav_codec_h263_init(TDAV_CODEC_H263(self), tdav_codec_h263_1998, AV_CODEC_ID_H263P, AV_CODEC_ID_H263);
     }
     return self;
 }
@@ -839,7 +839,7 @@ static tsk_object_t* tdav_codec_h263pp_ctor(tsk_object_t * self, va_list * app)
     if(h263pp) {
         /* init base: called by tmedia_codec_create() */
         /* init self */
-        tdav_codec_h263_init(TDAV_CODEC_H263(self), tdav_codec_h263_2000, CODEC_ID_H263P, CODEC_ID_H263);
+        tdav_codec_h263_init(TDAV_CODEC_H263(self), tdav_codec_h263_2000, AV_CODEC_ID_H263P, AV_CODEC_ID_H263);
     }
     return self;
 }
@@ -1343,12 +1343,12 @@ static void tdav_codec_h263p_rtp_callback(tdav_codec_h263_t *self, const void *d
 
 tsk_bool_t tdav_codec_ffmpeg_h263_is_supported()
 {
-    return (avcodec_find_encoder(CODEC_ID_H263) && avcodec_find_decoder(CODEC_ID_H263));
+    return (avcodec_find_encoder(AV_CODEC_ID_H263) && avcodec_find_decoder(AV_CODEC_ID_H263));
 }
 
 tsk_bool_t tdav_codec_ffmpeg_h263p_is_supported()
 {
-    return (avcodec_find_encoder(CODEC_ID_H263P) && avcodec_find_decoder(CODEC_ID_H263));
+    return (avcodec_find_encoder(AV_CODEC_ID_H263P) && avcodec_find_decoder(AV_CODEC_ID_H263));
 }
 
 tsk_bool_t tdav_codec_ffmpeg_h263pp_is_supported()
