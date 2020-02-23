@@ -142,12 +142,12 @@ make install
 ### Building iLBC ###
 **iLBC** is optional. Adds support for **iLBC** audio codec.
 ```
-svn co http://doubango.googlecode.com/svn/branches/2.0/doubango/thirdparties/scripts/ilbc
-cd ilbc
-wget http://www.ietf.org/rfc/rfc3951.txt
-awk -f extract.awk rfc3951.txt
-./autogen.sh && ./configure
-make && make install
+git clone https://github.com/quantum6/libiLBC
+./autogen.sh
+./configure --prefix=${BUILD_LIBS}
+ 
+make
+make install
 ```
 
 ### Building x264 ###
