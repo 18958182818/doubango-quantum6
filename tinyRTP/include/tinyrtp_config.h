@@ -24,9 +24,9 @@
 #define TINYRTP_CONFIG_H
 
 #define MAX_SEQ_NUM 65535
-typedef int err_status_t;
-#define err_status_ok          0
-#define err_status_replay_fail 9
+//typedef int err_status_t;
+//#define err_status_ok          0
+//#define err_status_replay_fail 9
 
 #ifdef __SYMBIAN32__
 #undef _WIN32 /* Because of WINSCW */

@@ -179,7 +179,7 @@ static int tdav_codec_h264_set(tmedia_codec_t* self, const tmedia_param_t* param
                     }
                     h264->encoder.context->width = (rotation == 90 || rotation == 270) ? TMEDIA_CODEC_VIDEO(h264)->out.height : TMEDIA_CODEC_VIDEO(h264)->out.width;
                     h264->encoder.context->height = (rotation == 90 || rotation == 270) ? TMEDIA_CODEC_VIDEO(h264)->out.width : TMEDIA_CODEC_VIDEO(h264)->out.height;
-                    if((ret = avcodec_open(h264->encoder.context, h264->encoder.codec)) < 0) {
+                    if((ret = avcodec_open2(h264->encoder.context, h264->encoder.codec, &options)) < 0) {
                         TSK_DEBUG_ERROR("Failed to open [%s] codec", TMEDIA_CODEC(h264)->plugin->desc);
                         return ret;
                     }
@@ -303,7 +303,7 @@ static tsk_size_t tdav_codec_h264_encode(tmedia_codec_t* self, const void* in_da
         h264->encoder.picture->pts = AV_NOPTS_VALUE;
         h264->encoder.picture->quality = h264->encoder.context->global_quality;
         // h264->encoder.picture->pts = h264->encoder.frame_count; MUST NOT
-        ret = avcodec_encode_video(h264->encoder.context, h264->encoder.buffer, size, h264->encoder.picture);
+        ret = avcodec_encode_video2(h264->encoder.context, h264->encoder.buffer, size, h264->encoder.picture);
         if(ret > 0) {
             tdav_codec_h264_rtp_encap(TDAV_CODEC_H264_COMMON(h264), h264->encoder.buffer, (tsk_size_t)ret);
         }
@@ -675,6 +675,7 @@ int tdav_codec_h264_open_encoder(tdav_codec_h264_t* self)
 #if HAVE_FFMPEG
     int ret;
     tsk_size_t size;
+    AVDictionary *options = NULL;
 
     if(self->encoder.context) {
         TSK_DEBUG_ERROR("Encoder already opened");
@@ -781,11 +782,11 @@ int tdav_codec_h264_open_encoder(tdav_codec_h264_t* self)
 #endif
 
     // Picture (YUV 420)
-    if(!(self->encoder.picture = avcodec_alloc_frame())) {
+    if(!(self->encoder.picture = av_frame_alloc())) {
         TSK_DEBUG_ERROR("Failed to create encoder picture");
         return -2;
     }
-    avcodec_get_frame_defaults(self->encoder.picture);
+    av_frame_unref(self->encoder.picture);
 
 
     size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height);
@@ -795,7 +796,7 @@ int tdav_codec_h264_open_encoder(tdav_codec_h264_t* self)
     }
 
     // Open encoder
-    if((ret = avcodec_open(self->encoder.context, self->encoder.codec)) < 0) {
+    if((ret = avcodec_open2(self->encoder.context, self->encoder.codec, &options)) < 0) {
         TSK_DEBUG_ERROR("Failed to open [%s] codec", TMEDIA_CODEC(self)->plugin->desc);
         return ret;
     }
@@ -842,14 +843,15 @@ int tdav_codec_h264_open_decoder(tdav_codec_h264_t* self)
 {
 #if HAVE_FFMPEG
     int ret;
+    AVDictionary* options = NULL;
 
     if(self->decoder.context) {
         TSK_DEBUG_ERROR("Decoder already opened");
         return -1;
     }
 
-    self->decoder.context = avcodec_alloc_context();
-    avcodec_get_context_defaults(self->decoder.context);
+    self->decoder.context = avcodec_alloc_context3(self->decoder.codec);
+    avcodec_get_context_defaults3(self->decoder.context, self->decoder.codec);
 
     self->decoder.context->pix_fmt = AV_PIX_FMT_YUV420P;
     self->decoder.context->flags2 |= AV_CODEC_FLAG2_FAST;
@@ -857,14 +859,14 @@ int tdav_codec_h264_open_decoder(tdav_codec_h264_t* self)
     self->decoder.context->height = TMEDIA_CODEC_VIDEO(self)->in.height;
 
     // Picture (YUV 420)
-    if(!(self->decoder.picture = avcodec_alloc_frame())) {
+    if(!(self->decoder.picture = av_frame_alloc())) {
         TSK_DEBUG_ERROR("Failed to create decoder picture");
         return -2;
     }
-    avcodec_get_frame_defaults(self->decoder.picture);
+    av_frame_unref(self->decoder.picture);
 
     // Open decoder
-    if((ret = avcodec_open(self->decoder.context, self->decoder.codec)) < 0) {
+    if((ret = avcodec_open2(self->decoder.context, self->decoder.codec, &options)) < 0) {
         TSK_DEBUG_ERROR("Failed to open [%s] codec", TMEDIA_CODEC(self)->plugin->desc);
         return ret;
     }

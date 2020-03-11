@@ -26,7 +26,7 @@
 #if HAVE_SRTP
 
 extern err_status_t
-crypto_get_random(unsigned char *buffer, unsigned int length);
+srtp_crypto_get_random(unsigned char *buffer, unsigned int length);
 
 int trtp_srtp_ctx_internal_init(struct trtp_srtp_ctx_internal_xs* ctx, int32_t tag, trtp_srtp_crypto_type_t type, uint32_t ssrc)
 {

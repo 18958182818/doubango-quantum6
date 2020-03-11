@@ -305,7 +305,7 @@ static tsk_size_t tdav_codec_h263_encode(tmedia_codec_t* self, const void* in_da
 #endif
     h263->encoder.picture->pts = AV_NOPTS_VALUE;
     h263->encoder.picture->quality = h263->encoder.context->global_quality;
-    ret = avcodec_encode_video(h263->encoder.context, h263->encoder.buffer, size, h263->encoder.picture);
+    ret = avcodec_encode_video2(h263->encoder.context, h263->encoder.buffer, size, h263->encoder.picture);
     if(ret > 0) {
         tdav_codec_h263_encap(h263, h263->encoder.buffer, (tsk_size_t)ret);
     }
@@ -898,13 +898,15 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
     int ret;
     int size;
     int32_t max_bw_kpbs;
+    AVDictionary* options = NULL;
+
     if(self->encoder.context) {
         TSK_DEBUG_ERROR("Encoder already opened");
         return -1;
     }
 
-    self->encoder.context = avcodec_alloc_context();
-    avcodec_get_context_defaults(self->encoder.context);
+    self->encoder.context = avcodec_alloc_context3(self->encoder.codec);
+    avcodec_get_context_defaults3(self->encoder.context, self->encoder.codec);
 
     self->encoder.context->pix_fmt		= AV_PIX_FMT_YUV420P;
     self->encoder.context->time_base.num  = 1;
@@ -934,11 +936,11 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
     self->encoder.context->max_b_frames = 0;
 
     // Picture (YUV 420)
-    if(!(self->encoder.picture = avcodec_alloc_frame())) {
+    if(!(self->encoder.picture = av_frame_alloc())) {
         TSK_DEBUG_ERROR("Failed to create encoder picture");
         return -2;
     }
-    avcodec_get_frame_defaults(self->encoder.picture);
+    av_frame_unref(self->encoder.picture);
     //if((ret = avpicture_alloc((AVPicture*)self->encoder.picture, AV_PIX_FMT_YUV420P, self->encoder.context->width, self->encoder.context->height))){
     //	TSK_DEBUG_ERROR("Failed to allocate encoder picture");
     //	return ret;
@@ -989,7 +991,7 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
     }
     }
     // Open encoder
-    if((ret = avcodec_open(self->encoder.context, self->encoder.codec)) < 0) {
+    if((ret = avcodec_open2(self->encoder.context, self->encoder.codec, &options)) < 0) {
         TSK_DEBUG_ERROR("Failed to open [%s] codec", TMEDIA_CODEC(self)->plugin->desc);
         return ret;
     }
@@ -1002,25 +1004,26 @@ int tdav_codec_h263_open_encoder(tdav_codec_h263_t* self)
 int tdav_codec_h263_open_decoder(tdav_codec_h263_t* self)
 {
     int ret, size;
+    AVDictionary* options = NULL;
 
     if(self->decoder.context) {
         TSK_DEBUG_ERROR("Decoder already opened");
         return -1;
     }
 
-    self->decoder.context = avcodec_alloc_context();
-    avcodec_get_context_defaults(self->decoder.context);
+    self->decoder.context = avcodec_alloc_context3(self->decoder.codec);
+    avcodec_get_context_defaults3(self->decoder.context, self->decoder.codec);
 
     self->decoder.context->pix_fmt = AV_PIX_FMT_YUV420P;
     self->decoder.context->width = TMEDIA_CODEC_VIDEO(self)->in.width;
     self->decoder.context->height = TMEDIA_CODEC_VIDEO(self)->in.height;
 
     // Picture (YUV 420)
-    if(!(self->decoder.picture = avcodec_alloc_frame())) {
+    if(!(self->decoder.picture = av_frame_alloc())) {
         TSK_DEBUG_ERROR("Failed to create decoder picture");
         return -2;
     }
-    avcodec_get_frame_defaults(self->decoder.picture);
+    av_frame_unref(self->decoder.picture);
 
     size = avpicture_get_size(AV_PIX_FMT_YUV420P, self->decoder.context->width, self->decoder.context->height);
     if(!(self->decoder.accumulator = tsk_calloc((size + AV_INPUT_BUFFER_PADDING_SIZE), sizeof(uint8_t)))) {
@@ -1029,7 +1032,7 @@ int tdav_codec_h263_open_decoder(tdav_codec_h263_t* self)
     }
 
     // Open decoder
-    if((ret = avcodec_open(self->decoder.context, self->decoder.codec)) < 0) {
+    if((ret = avcodec_open2(self->decoder.context, self->decoder.codec, &options)) < 0) {
         TSK_DEBUG_ERROR("Failed to open [%s] codec", TMEDIA_CODEC(self)->plugin->desc);
         return ret;
     }
