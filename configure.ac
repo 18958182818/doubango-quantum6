@@ -79,27 +79,27 @@ if test "$target_os" = "android"; then
 		;;
 		armv7-a)
 			export ANDROID_PREFIX=arm-linux-androideabi
-			export SYSROOT=$NDK/platforms/android-3/arch-arm
+			export SYSROOT=$NDK/platforms/android-19/arch-arm
 			export ANDROID_TOOLCHAIN=$(pwd)/my-android-toolchain-android-armv7-a
-    			$NDK/build/tools/make-standalone-toolchain.sh --platform=android-3 --arch=arm --install-dir=$ANDROID_TOOLCHAIN
+    			$NDK/build/tools/make-standalone-toolchain.sh --platform=android-19 --arch=arm --install-dir=$ANDROID_TOOLCHAIN
     			export CFLAGS='-march=armv7-a -mfloat-abi=softfp -DANDROID=1 -D__ARMEL__'
     			export LDFLAGS='-Wl,--fix-cortex-a8'
 			AC_SUBST(TARGET_ARCH, "arm")
 		;;
 		armv7-a-neon)
 			export ANDROID_PREFIX=arm-linux-androideabi
-			export SYSROOT=$NDK/platforms/android-3/arch-arm
+			export SYSROOT=$NDK/platforms/android-19/arch-arm
     			export ANDROID_TOOLCHAIN=$(pwd)/my-android-toolchain-android-armv7-a-neon
-    			$NDK/build/tools/make-standalone-toolchain.sh --platform=android-3 --arch=arm --install-dir=$ANDROID_TOOLCHAIN
+    			$NDK/build/tools/make-standalone-toolchain.sh --platform=android-19 --arch=arm --install-dir=$ANDROID_TOOLCHAIN
     			export CFLAGS='-march=armv7-a -mfloat-abi=softfp -mfpu=neon -DANDROID=1'
     			export LDFLAGS='-Wl,--fix-cortex-a8'
 			AC_SUBST(TARGET_ARCH, "arm")
 		;;
 		*)
 			export ANDROID_PREFIX=arm-linux-androideabi
-			export SYSROOT=$NDK/platforms/android-3/arch-arm
+			export SYSROOT=$NDK/platforms/android-19/arch-arm
 			export ANDROID_TOOLCHAIN=$(pwd)/my-android-toolchain-armv5te
-    			$NDK/build/tools/make-standalone-toolchain.sh --platform=android-3 --arch=arm --install-dir=$ANDROID_TOOLCHAIN
+    			$NDK/build/tools/make-standalone-toolchain.sh --platform=android-19 --arch=arm --install-dir=$ANDROID_TOOLCHAIN
 			export CFLAGS='-DANDROID=1 -D__ARMEL__'
 			AC_SUBST(TARGET_ARCH, "arm")
 		;;
