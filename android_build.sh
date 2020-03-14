@@ -2,6 +2,12 @@
 
 export HOME=`pwd`
 
+DEST_LIB_DIR=$HOME/build_libs
+if [ -d $DEST_LIB_DIR ]; then
+    rm -rf $DEST_LIB_DIR
+fi
+mkdir $DEST_LIB_DIR
+
 ### Options (change next values to 'no' to disable some features) ###
 export DEBUG=no
 export FFMPEG=yes
@@ -101,52 +107,68 @@ if [ x$SSL = "xno" ]; then
 	export OPTIONS="${OPTIONS} --without-ssl"
 fi
 
-for arch in armv5te armv7-a armv7-a-neon arm64 x86 x64
+# for arch in armv5te armv7-a armv7-a-neon arm64 x86 x64
+if [ "$1" == "all" ]; then
+    # ARCHS="armv5te armv7-a armv7-a-neon arm64 x86 x64"
+    ARCHS="armv7-a armv7-a-neon arm64"
+else
+    ARCHS="armv7-a"
+fi
+for arch in $ARCHS
 do
-	if [ $arch = "x86" ]; then \
-	   export HOST=i686-linux-android; \
-	elif [ $arch = "x64" ]; then \
-	   export HOST=x86_64-linux-android; \
-	elif [ $arch = "arm64" ]; then \
-	   export HOST=aarch64-linux-android; \
-	else \
-	   export HOST=arm-linux-androideabi; \
-	fi \
-	
-	echo -e building for ARCH="$arch, OPTIONS=$OPTIONS.... \n"
-	
-	./configure --host=$HOST --with-android-cpu=$arch --prefix=$HOME/$arch --with-pic --enable-nonfree=$ENABLE_NONFREE --enable-gpl=$ENABLE_GPL --enable-debug=$DEBUG $OPTIONS
-	make clean
-	make uninstall
-	make all
-	if [ $DEBUG = "yes" ]; then \
-		make install; \
-	else \
-		make install-strip; \
-	fi \
+    if [ $arch = "x86" ]; then \
+        export HOST=i686-linux-android; \
+    elif [ $arch = "x64" ]; then \
+        export HOST=x86_64-linux-android; \
+    elif [ $arch = "arm64" ]; then \
+        export HOST=aarch64-linux-android; \
+    else \
+        export HOST=arm-linux-androideabi; \
+    fi \
+
+    echo -e building for ARCH="$arch, OPTIONS=$OPTIONS.... \n"
+
+    if [ "$1" == "all" ]; then
+        ./configure --host=$HOST --with-android-cpu=$arch --prefix=$HOME/$arch --with-pic --enable-nonfree=$ENABLE_NONFREE --enable-gpl=$ENABLE_GPL --enable-debug=$DEBUG $OPTIONS
+        make clean
+        make uninstall
+    fi
+
+    make all
+    if [ $DEBUG = "yes" ]; then \
+        make install; \
+    else \
+        make install-strip; \
+    fi \
+
+    DEST_ARCH_DIR=$DEST_LIB_DIR/${arch}
+    if [ ! -d $DEST_ARCH_DIR ]; then
+        mkdir $DEST_ARCH_DIR
+    fi
+    cp --force $HOME/${arch}/lib/libtinyWRAP.so                  $DEST_ARCH_DIR/libtinyWRAP.so
+    cp --force $HOME/${arch}/lib/libplugin_audio_opensles.so     $DEST_ARCH_DIR/libplugin_audio_opensles.so
+
 done
 
-mkdir -p $HOME/imsdroid/libs/armeabi
-mkdir -p $HOME/imsdroid/libs/armeabi-v7a
-mkdir -p $HOME/imsdroid/libs/arm64-v8a
-mkdir -p $HOME/imsdroid/libs/x86
-mkdir -p $HOME/imsdroid/libs/x86_64
-mkdir -p $HOME/imsdroid/libs/mips
+# mkdir -p $HOME/imsdroid/libs/armeabi
+# mkdir -p $HOME/imsdroid/libs/armeabi-v7a
+# mkdir -p $HOME/imsdroid/libs/arm64-v8a
+# mkdir -p $HOME/imsdroid/libs/x86
+# mkdir -p $HOME/imsdroid/libs/x86_64
+# mkdir -p $HOME/imsdroid/libs/mips
 
-cp --force $HOME/armv5te/lib/libtinyWRAP.so.0.0.0 $HOME/imsdroid/libs/armeabi/libtinyWRAP.so
-cp --force $HOME/armv5te/lib/libplugin_audio_opensles.so.0.0.0 $HOME/imsdroid/libs/armeabi/libplugin_audio_opensles.so
+# cp --force $HOME/armv5te/lib/libtinyWRAP.so.0.0.0              $DEST_ARCH_DIR/libtinyWRAP.so
+# cp --force $HOME/armv5te/lib/libplugin_audio_opensles.so.0.0.0 $DEST_ARCH_DIR/libplugin_audio_opensles.so
 
-cp --force $HOME/armv7-a/lib/libtinyWRAP.so.0.0.0 $HOME/imsdroid/libs/armeabi-v7a/libtinyWRAP.so
-cp --force $HOME/armv7-a/lib/libplugin_audio_opensles.so.0.0.0 $HOME/imsdroid/libs/armeabi-v7a/libplugin_audio_opensles.so
-cp --force $HOME/armv7-a-neon/lib/libtinyWRAP.so.0.0.0 $HOME/imsdroid/libs/armeabi-v7a/libtinyWRAP_neon.so
 
-cp --force $HOME/arm64/lib/libtinyWRAP.so.0.0.0 $HOME/imsdroid/libs/arm64-v8a/libtinyWRAP.so
-cp --force $HOME/arm64/lib/libplugin_audio_opensles.so.0.0.0 $HOME/imsdroid/libs/arm64-v8a/libplugin_audio_opensles.so
+# cp --force $HOME/armv7-a/lib/libtinyWRAP.so                    $DEST_ARCH_DIR/libtinyWRAP.so
+# cp --force $HOME/armv7-a/lib/libplugin_audio_opensles.so       $DEST_ARCH_DIR/libplugin_audio_opensles.so
+# cp --force $HOME/armv7-a-neon/lib/libtinyWRAP.so               $DEST_ARCH_DIR/libtinyWRAP_neon.so
 
-cp --force $HOME/x86/lib/libtinyWRAP.so.0.0.0 $HOME/imsdroid/libs/x86/libtinyWRAP.so
-cp --force $HOME/x86/lib/libplugin_audio_opensles.so.0.0.0 $HOME/imsdroid/libs/x86/libplugin_audio_opensles.so
+# cp --force $HOME/x86/lib/libtinyWRAP.so.0.0.0                  $DEST_ARCH_DIR/libtinyWRAP.so
+# cp --force $HOME/x86/lib/libplugin_audio_opensles.so.0.0.0     $DEST_ARCH_DIR/libplugin_audio_opensles.so
 
-cp --force $HOME/x64/lib/libtinyWRAP.so.0.0.0 $HOME/imsdroid/libs/x86_64/libtinyWRAP.so
-cp --force $HOME/x64/lib/libplugin_audio_opensles.so.0.0.0 $HOME/imsdroid/libs/x86_64/libplugin_audio_opensles.so
+# cp --force $HOME/x64/lib/libtinyWRAP.so.0.0.0                  $DEST_ARCH_DIR/libtinyWRAP.so
+# cp --force $HOME/x64/lib/libplugin_audio_opensles.so.0.0.0     $DEST_ARCH_DIR/libplugin_audio_opensles.so
 
 
