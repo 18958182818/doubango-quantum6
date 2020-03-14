@@ -3,10 +3,9 @@
 export HOME=`pwd`
 
 DEST_LIB_DIR=$HOME/build_libs
-if [ -d $DEST_LIB_DIR ]; then
-    rm -rf $DEST_LIB_DIR
+if [ ! -d $DEST_LIB_DIR ]; then
+    mkdir $DEST_LIB_DIR
 fi
-mkdir $DEST_LIB_DIR
 
 ### Options (change next values to 'no' to disable some features) ###
 export DEBUG=no
@@ -142,9 +141,10 @@ do
     fi \
 
     DEST_ARCH_DIR=$DEST_LIB_DIR/${arch}
-    if [ ! -d $DEST_ARCH_DIR ]; then
-        mkdir $DEST_ARCH_DIR
+    if [ -d $DEST_ARCH_DIR ]; then
+        rm -rf $DEST_ARCH_DIR
     fi
+    mkdir $DEST_ARCH_DIR
     cp --force $HOME/${arch}/lib/libtinyWRAP.so                  $DEST_ARCH_DIR/libtinyWRAP.so
     cp --force $HOME/${arch}/lib/libplugin_audio_opensles.so     $DEST_ARCH_DIR/libplugin_audio_opensles.so
 
